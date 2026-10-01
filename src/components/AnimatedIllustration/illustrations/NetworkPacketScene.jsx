@@ -87,16 +87,13 @@ export const NetworkPacketScene = ({ isReplaying }) => {
 
         {/* Animated Traveling Packet */}
         {packetActive && (
-          <g
-            style={{
-              animation: 'packetTravel 2.8s linear infinite'
-            }}
-            transform="translate(130, 118)"
-          >
-            <rect x="0" y="0" width="32" height="20" rx="4" fill="#0284c7" filter="drop-shadow(0 2px 4px rgba(2, 132, 199, 0.4))" />
-            <text x="16" y="13" textAnchor="middle" fontSize="8" fontWeight="700" fill="#ffffff">
-              TCP:22
-            </text>
+          <g transform="translate(125, 123)">
+            <g style={{ animation: 'packetTravel 2.8s linear infinite' }}>
+              <rect x="0" y="0" width="34" height="20" rx="4" fill="#0284c7" filter="drop-shadow(0 2px 4px rgba(2, 132, 199, 0.4))" />
+              <text x="17" y="13.5" textAnchor="middle" fontSize="8" fontWeight="700" fill="#ffffff">
+                TCP:22
+              </text>
+            </g>
           </g>
         )}
 

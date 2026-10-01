@@ -1,573 +1,507 @@
 import React, { useState } from 'react';
 import {
   ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
   BookOpen,
   Terminal,
   Play,
-  Square,
-  Lock,
-  CheckCircle2,
+  RotateCcw,
+  Sparkles,
+  ArrowRight,
   Clock,
-  AlertCircle
+  Bookmark
 } from 'lucide-react';
-import { M4_NARRATIVE, M4_SLIDES, M4_LAB_TASKS } from '../data/m4Content';
+import { useCourse } from '../context/CourseContext';
+import { M4_BRIEFING, M4_TOPICS } from '../data/m4Content';
+import { OutlineSidebar } from '../components/OutlineSidebar';
 import { TheorySlide } from '../components/TheorySlide';
-import { SequentialTaskList } from '../components/SequentialTaskList';
-import { LabConsole } from '../components/LabConsole';
+import { LabGuide } from '../components/LabGuide';
+import { KaliWorkstation } from '../components/KaliWorkstation';
 import { LabLaunchLoader } from '../components/LabLaunchLoader';
 import { CelebrationScreen } from '../components/CelebrationScreen';
-import { useCourse } from '../context/CourseContext';
 
 export const ModuleDetailPage = () => {
   const {
     navigateTo,
-    slideProgress,
-    updateSlideVisited,
-    markSlidesCompleted,
-    labProgress,
-    startLab,
-    endLab,
-    submitTaskAnswer,
-    completeModule
+    m4State,
+    navigateToM4Item,
+    returnToFurthestPoint,
+    startLabSession,
+    resetCurrentLab,
+    completeM4Module,
+    getModuleTopics,
+    showToast
   } = useCourse();
 
-  // Local active state
-  const [activeStage, setActiveStage] = useState('theory'); // 'theory' | 'lab'
-  const [isLaunching, setIsLaunching] = useState(false);
-  const [showSkipTooltip, setShowSkipTooltip] = useState(false);
-  const [showCelebration, setShowCelebration] = useState(false);
-  const [consoleTab, setConsoleTab] = useState('vm');
+  // Load topics from admin custom content if available
+  const topics = getModuleTopics ? getModuleTopics('m4') : M4_TOPICS;
 
-  const m4SlideState = slideProgress.m4 || {
-    currentSlide: 1,
-    maxSlideVisited: 1,
-    completed: false
+  const currentTopic = topics[m4State.currentTopicIndex] || topics[0];
+  const topicNumber = currentTopic.topicNumber;
+  const currentSlide = currentTopic.slides ? currentTopic.slides[m4State.currentSlideIndex] : null;
+
+  // Sidebar collapse toggle
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Workstation expansion state
+  const [workstationExpanded, setWorkstationExpanded] = useState(false);
+
+  // Draggable split width (left panel percentage)
+  const [leftWidthPct, setLeftWidthPct] = useState(48);
+  const [isDraggingDivider, setIsDraggingDivider] = useState(false);
+
+  // Launch loader state
+  const [launchLoaderMode, setLaunchLoaderMode] = useState(null); // 'initial' | 'resume' | 'time_skip' | null
+
+  // Celebration Modals
+  const [celebrationType, setCelebrationType] = useState(null); // 'lab6_live' | 'm4_complete' | null
+
+  // Check if viewing an earlier item (Furthest point check)
+  const isReviewingEarlierItem =
+    m4State.currentTopicIndex < m4State.furthestTopicIndex ||
+    (m4State.currentTopicIndex === m4State.furthestTopicIndex &&
+      (m4State.currentItemType === 'briefing' && m4State.furthestItemType !== 'briefing') ||
+      (m4State.currentItemType === 'slide' &&
+        (m4State.furthestItemType === 'lab' || m4State.currentSlideIndex < m4State.furthestSlideIndex)));
+
+  // Lab review mode check (lab passed already)
+  const labKey = `lab-${topicNumber}`;
+  const isLabPassed = m4State.passedLabIds.includes(labKey) || m4State.passedLabIds.includes(`lab${topicNumber}`);
+
+  // Handle Launch Lab from Briefing Card (Topic 1)
+  const handleLaunchLabFromBriefing = () => {
+    setLaunchLoaderMode('initial');
   };
 
-  const m4LabState = labProgress.m4 || {
-    isLaunched: false,
-    isRunning: false,
-    elapsedSeconds: 0,
-    activeTaskId: 'task-1',
-    completedTasks: [],
-    answers: {},
-    isCompleted: false
+  const handleLaunchLoaderComplete = () => {
+    setLaunchLoaderMode(null);
+    startLabSession();
+    navigateToM4Item(m4State.currentTopicIndex, 'lab');
   };
 
-  const isTheoryCompleted = m4SlideState.completed;
-  const currentSlideIndex = (m4SlideState.currentSlide || 1) - 1;
-
-  // Handle slide change
-  const handleSlideChange = (newIndex) => {
-    updateSlideVisited('m4', newIndex + 1, M4_SLIDES.length);
-  };
-
-  // Handle finish theory
-  const handleCompleteTheory = () => {
-    markSlidesCompleted('m4');
-    setActiveStage('lab');
-  };
-
-  // Launch lab animation trigger
-  const handleLaunchLabClick = () => {
-    if (!isTheoryCompleted) {
-      setShowSkipTooltip(true);
-      setTimeout(() => setShowSkipTooltip(false), 3000);
-      return;
+  // Handle slide traversal
+  const handleNextSlide = () => {
+    if (m4State.currentSlideIndex < currentTopic.slides.length - 1) {
+      navigateToM4Item(m4State.currentTopicIndex, 'slide', m4State.currentSlideIndex + 1);
     }
-    setIsLaunching(true);
   };
 
-  const handleLaunchCompleted = () => {
-    setIsLaunching(false);
-    startLab('m4');
-    setActiveStage('lab');
-  };
-
-  // Task answer submission
-  const handleSubmitAnswer = (taskId, answer, correctAnswers, nextTaskId) => {
-    const result = submitTaskAnswer('m4', taskId, answer, correctAnswers, nextTaskId);
-    if (result.success) {
-      // Check if this was the last task (task-4)
-      if (taskId === 'task-4') {
-        setTimeout(() => {
-          completeModule('m4', 'm5');
-          setShowCelebration(true);
-        }, 500);
-      }
+  const handleBackSlide = () => {
+    if (m4State.currentSlideIndex > 0) {
+      navigateToM4Item(m4State.currentTopicIndex, 'slide', m4State.currentSlideIndex - 1);
     }
-    return result;
   };
 
-  // Format timer
-  const formatTimer = (totalSeconds) => {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes
-      .toString()
-      .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  // FIX 1: Finish & Unlock Lab moves to Briefing / Pre-lab message card, never jumps straight to lab
+  const handleFinishAndUnlockLab = () => {
+    navigateToM4Item(m4State.currentTopicIndex, 'briefing');
   };
+
+  // FIX 2: Reset lab handler with resume animation and feedback toast
+  const handleResetLab = (targetLabKey) => {
+    resetCurrentLab(targetLabKey);
+    const labId = targetLabKey || `lab${topicNumber}`;
+    const isPassed = m4State.passedLabIds.includes(labId) || m4State.passedLabIds.includes(targetLabKey);
+    if (showToast) {
+      showToast(isPassed ? 'Lab restored to completed state.' : 'Lab reset. Starting again from Flag 1.');
+    }
+    setLaunchLoaderMode('resume');
+  };
+
+  // Watch for Lab 6 / Lab 7 completions to trigger celebrations
+  React.useEffect(() => {
+    const isLab6Passed = m4State.passedLabIds.includes('lab6') || m4State.passedLabIds.includes('lab-6');
+    const isLab7Passed = m4State.passedLabIds.includes('lab7') || m4State.passedLabIds.includes('lab-7');
+    if (isLab6Passed && !isLab7Passed && m4State.currentTopicIndex === 5 && m4State.currentItemType === 'lab') {
+      setCelebrationType('lab6_live');
+    } else if (isLab7Passed && m4State.currentTopicIndex === 6 && m4State.currentItemType === 'lab') {
+      setCelebrationType('m4_complete');
+    }
+  }, [m4State.passedLabIds, m4State.currentTopicIndex, m4State.currentItemType]);
+
+  // Draggable divider mouse events
+  const handleMouseDownDivider = () => {
+    setIsDraggingDivider(true);
+  };
+
+  React.useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isDraggingDivider) return;
+      const container = document.getElementById('lab-split-container');
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      const newPct = Math.max(25, Math.min(75, ((e.clientX - rect.left) / rect.width) * 100));
+      setLeftWidthPct(newPct);
+    };
+
+    const handleMouseUp = () => {
+      setIsDraggingDivider(false);
+    };
+
+    if (isDraggingDivider) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDraggingDivider]);
 
   return (
-    <div style={{ maxWidth: '1360px', margin: '0 auto', padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '22px' }}>
-      {/* Top Breadcrumb & Header Nav */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-        <button
-          type="button"
-          onClick={() => navigateTo('curriculum')}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            color: '#0284c7',
-            fontSize: '13.5px',
-            fontWeight: '600'
-          }}
-        >
-          <ArrowLeft size={16} />
-          <span>Back to Curriculum</span>
-        </button>
+    <div
+      style={{
+        display: 'flex',
+        height: 'calc(100vh - 60px)',
+        backgroundColor: '#f8fafc',
+        overflow: 'hidden'
+      }}
+    >
+      {/* 1. Collapsible Outline Sidebar */}
+      <OutlineSidebar
+        isCollapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+      />
 
-        {/* Stage Selector Pills */}
-        <div
-          style={{
-            display: 'flex',
-            backgroundColor: '#ffffff',
-            borderRadius: '10px',
-            border: '1px solid #e2e8f0',
-            padding: '3px',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
-          }}
-        >
-          <button
-            onClick={() => setActiveStage('theory')}
-            style={{
-              padding: '6px 16px',
-              borderRadius: '8px',
-              fontSize: '12.5px',
-              fontWeight: activeStage === 'theory' ? '700' : '500',
-              color: activeStage === 'theory' ? '#0284c7' : '#64748b',
-              backgroundColor: activeStage === 'theory' ? '#f0f9ff' : 'transparent',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'all 0.15s ease'
-            }}
-          >
-            <BookOpen size={14} />
-            <span>Stage 1: Theory Slides</span>
-            {isTheoryCompleted && <CheckCircle2 size={13} color="#10b981" />}
-          </button>
-
-          <button
-            onClick={() => {
-              if (isTheoryCompleted) {
-                setActiveStage('lab');
-              } else {
-                setShowSkipTooltip(true);
-                setTimeout(() => setShowSkipTooltip(false), 3000);
-              }
-            }}
-            style={{
-              padding: '6px 16px',
-              borderRadius: '8px',
-              fontSize: '12.5px',
-              fontWeight: activeStage === 'lab' ? '700' : '500',
-              color: !isTheoryCompleted
-                ? '#94a3b8'
-                : activeStage === 'lab'
-                ? '#0284c7'
-                : '#64748b',
-              backgroundColor: activeStage === 'lab' ? '#f0f9ff' : 'transparent',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: isTheoryCompleted ? 'pointer' : 'not-allowed',
-              transition: 'all 0.15s ease',
-              position: 'relative'
-            }}
-          >
-            {isTheoryCompleted ? <Terminal size={14} /> : <Lock size={13} />}
-            <span>Stage 2: Hands-on Lab</span>
-            {m4LabState.isCompleted && <CheckCircle2 size={13} color="#10b981" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Narrative Scenario Hero Banner */}
-      <section
+      {/* 2. Main Stage Content Area */}
+      <div
         style={{
-          backgroundColor: '#ffffff',
-          borderRadius: '16px',
-          border: '1px solid #e2e8f0',
-          padding: '24px 28px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)'
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-          <span
-            style={{
-              fontFamily: 'monospace',
-              fontSize: '12px',
-              fontWeight: '800',
-              color: '#0284c7',
-              backgroundColor: '#e0f2fe',
-              padding: '2px 8px',
-              borderRadius: '6px'
-            }}
-          >
-            Module M4
-          </span>
-          <span
-            style={{
-              fontSize: '11px',
-              fontWeight: '700',
-              color: '#0369a1',
-              backgroundColor: '#e0f2fe',
-              padding: '2px 8px',
-              borderRadius: '12px'
-            }}
-          >
-            Phase 2: Build
-          </span>
-          <span style={{ fontSize: '12px', color: '#64748b' }}>
-            3T + 4L = 7 Hours
-          </span>
-        </div>
-
-        <h1 style={{ fontSize: '22px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }}>
-          Our First Cloud Configuration — Building Your Own Cloud
-        </h1>
-
-        {/* Narrative Box */}
+        {/* Top Header / Sub-navigation */}
         <div
           style={{
-            backgroundColor: '#f8fafc',
-            borderLeft: '4px solid #0284c7',
-            padding: '12px 16px',
-            borderRadius: '0 8px 8px 0',
-            fontSize: '13.5px',
-            color: '#334155',
-            lineHeight: '1.6'
-          }}
-        >
-          <div style={{ fontWeight: '700', color: '#0f172a', marginBottom: '4px' }}>
-            {M4_NARRATIVE.title}
-          </div>
-          <p style={{ fontStyle: 'italic', marginBottom: '6px', color: '#475569' }}>
-            {M4_NARRATIVE.scenario}
-          </p>
-          <p style={{ fontSize: '13px', color: '#64748b' }}>
-            {M4_NARRATIVE.context}
-          </p>
-        </div>
-      </section>
-
-      {/* Skip Warning Tooltip Alert if user tries to jump directly to lab */}
-      {showSkipTooltip && (
-        <div
-          className="animate-pop-in"
-          style={{
-            backgroundColor: '#fffbeb',
-            border: '1px solid #fde68a',
-            borderRadius: '10px',
-            padding: '12px 16px',
+            height: '48px',
+            backgroundColor: '#ffffff',
+            borderBottom: '1px solid #e2e8f0',
+            padding: '0 20px',
             display: 'flex',
             alignItems: 'center',
-            gap: '10px',
-            color: '#92400e',
-            fontSize: '13px'
+            justifyContent: 'space-between',
+            flexShrink: 0
           }}
         >
-          <AlertCircle size={18} color="#d97706" style={{ flexShrink: 0 }} />
-          <span>
-            <strong>Theory Completion Required:</strong> Please complete all 7 theory slides before launching the hands-on lab environment.
-          </span>
-        </div>
-      )}
-
-      {/* STAGE 1: THEORY SLIDES VIEW */}
-      {activeStage === 'theory' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <TheorySlide
-            slides={M4_SLIDES}
-            currentSlideIndex={currentSlideIndex}
-            onSlideChange={handleSlideChange}
-            maxSlideVisited={m4SlideState.maxSlideVisited || 1}
-            onCompleteTheory={handleCompleteTheory}
-            isTheoryCompleted={isTheoryCompleted}
-          />
-
-          {/* Transition / Unlock Card when theory is done */}
-          {isTheoryCompleted && (
-            <div
-              className="animate-slide-in"
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <button
+              type="button"
+              onClick={() => navigateTo('curriculum')}
               style={{
-                backgroundColor: '#ecfdf5',
-                borderRadius: '14px',
-                border: '1.5px solid #a7f3d0',
-                padding: '20px 24px',
-                display: 'flex',
+                display: 'inline-flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '16px'
+                gap: '4px',
+                fontSize: '12px',
+                fontWeight: '700',
+                color: '#0284c7',
+                cursor: 'pointer'
               }}
             >
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#065f46', fontWeight: '800', fontSize: '15px' }}>
-                  <CheckCircle2 size={18} color="#10b981" />
-                  <span>Theory Stage Complete!</span>
-                </div>
-                <p style={{ fontSize: '13.5px', color: '#047857', marginTop: '4px' }}>
-                  Nice work — you've covered the basics. Ready to build your first cloud environment?
-                </p>
-              </div>
+              <ArrowLeft size={14} />
+              <span>Curriculum</span>
+            </button>
 
-              <button
-                type="button"
-                onClick={handleLaunchLabClick}
-                style={{
-                  backgroundColor: '#059669',
-                  color: '#ffffff',
-                  padding: '11px 22px',
-                  borderRadius: '10px',
-                  fontSize: '13.5px',
-                  fontWeight: '700',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  boxShadow: '0 4px 6px -1px rgba(5, 150, 105, 0.3)',
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#047857')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#059669')}
-              >
-                <Play size={15} fill="#ffffff" />
-                <span>Launch Hands-on Lab</span>
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+            <span style={{ color: '#cbd5e1' }}>/</span>
 
-      {/* STAGE 2: HANDS-ON LAB VIEW */}
-      {activeStage === 'lab' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Lab Control Bar */}
-          <div
-            style={{
-              backgroundColor: '#ffffff',
-              borderRadius: '14px',
-              border: '1px solid #e2e8f0',
-              padding: '14px 20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '12px'
-            }}
-          >
-            {/* Status indicator */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              {m4LabState.isRunning ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span
-                    style={{
-                      width: '10px',
-                      height: '10px',
-                      borderRadius: '50%',
-                      backgroundColor: '#10b981'
-                    }}
-                    className="animate-pulse-green"
-                  />
-                  <span style={{ fontSize: '13.5px', fontWeight: '700', color: '#065f46' }}>
-                    Lab Running
-                  </span>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#94a3b8' }} />
-                  <span style={{ fontSize: '13.5px', fontWeight: '600', color: '#64748b' }}>
-                    Lab Offline
-                  </span>
-                </div>
-              )}
-
-              {/* Timer */}
-              {m4LabState.isRunning && (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    fontSize: '13px',
-                    fontFamily: 'monospace',
-                    color: '#334155',
-                    backgroundColor: '#f1f5f9',
-                    padding: '3px 10px',
-                    borderRadius: '6px'
-                  }}
-                >
-                  <Clock size={13} color="#64748b" />
-                  <span>{formatTimer(m4LabState.elapsedSeconds || 0)}</span>
-                </div>
-              )}
-
-              <span style={{ fontSize: '12.5px', color: '#64748b' }}>
-                Completed: {m4LabState.completedTasks?.length || 0} / {M4_LAB_TASKS.length} Tasks
-              </span>
-            </div>
-
-            {/* Launch / End Button */}
-            <div>
-              {m4LabState.isRunning ? (
-                <button
-                  type="button"
-                  onClick={() => endLab('m4')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    fontSize: '12.5px',
-                    fontWeight: '600',
-                    color: '#dc2626',
-                    backgroundColor: '#fef2f2',
-                    border: '1px solid #fecaca'
-                  }}
-                >
-                  <Square size={13} fill="#dc2626" />
-                  <span>End Lab Session</span>
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleLaunchLabClick}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '9px 18px',
-                    borderRadius: '8px',
-                    fontSize: '13px',
-                    fontWeight: '700',
-                    color: '#ffffff',
-                    backgroundColor: '#0284c7',
-                    boxShadow: '0 2px 4px rgba(2, 132, 199, 0.25)'
-                  }}
-                >
-                  <Play size={14} fill="#ffffff" />
-                  <span>Launch Lab</span>
-                </button>
-              )}
+            <div style={{ fontSize: '13px', fontWeight: '700', color: '#0f172a' }}>
+              Topic {topicNumber}: {currentTopic.title}
             </div>
           </div>
 
-          {/* Split-Screen Lab Workspace */}
-          {m4LabState.isLaunched ? (
-            <div
+          {/* "Back to where you left off" Button if reviewing earlier items */}
+          {isReviewingEarlierItem && (
+            <button
+              type="button"
+              onClick={returnToFurthestPoint}
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'minmax(340px, 1fr) minmax(440px, 1.25fr)',
-                gap: '20px',
-                alignItems: 'start'
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '4px 12px',
+                backgroundColor: '#e0f2fe',
+                border: '1px solid #bae6fd',
+                borderRadius: '6px',
+                color: '#0369a1',
+                fontSize: '11.5px',
+                fontWeight: '700',
+                cursor: 'pointer'
               }}
-              className="lab-split-screen"
             >
-              {/* LEFT PANEL: Sequential Task List */}
-              <div>
-                <SequentialTaskList
-                  tasks={M4_LAB_TASKS}
-                  activeTaskId={m4LabState.activeTaskId || 'task-1'}
-                  completedTasks={m4LabState.completedTasks || []}
-                  answers={m4LabState.answers || {}}
-                  onSubmitAnswer={handleSubmitAnswer}
-                  onTaskFocus={(tabToOpen) => setConsoleTab(tabToOpen)}
-                />
-              </div>
+              <span>Back to where you left off</span>
+              <ArrowRight size={13} />
+            </button>
+          )}
+        </div>
 
-              {/* RIGHT PANEL: Simulated Training Cloud Console */}
-              <div style={{ position: 'sticky', top: '80px' }}>
-                <LabConsole activeTab={consoleTab} onTabChange={setConsoleTab} />
-              </div>
-            </div>
-          ) : (
-            /* Pre-launch prompt card */
+        {/* 3. Stage Viewport */}
+        <div
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: m4State.currentItemType === 'lab' ? '12px' : '28px 24px',
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          {/* STAGE A: Briefing / Pre-Lab Card */}
+          {m4State.currentItemType === 'briefing' && (
             <div
               style={{
+                maxWidth: '680px',
+                margin: '30px auto',
                 backgroundColor: '#ffffff',
                 borderRadius: '16px',
                 border: '1px solid #e2e8f0',
-                padding: '40px 24px',
-                textAlign: 'center',
+                padding: '36px',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center',
-                gap: '16px'
+                gap: '20px'
+              }}
+              className="animate-pop-in"
+            >
+              {topicNumber === 1 ? (
+                <>
+                  <div>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: '800',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.06em',
+                        backgroundColor: '#e0f2fe',
+                        color: '#0369a1',
+                        padding: '3px 10px',
+                        borderRadius: '12px'
+                      }}
+                    >
+                      Lab Briefing
+                    </span>
+                    <h1 style={{ fontSize: '24px', fontWeight: '900', color: '#0f172a', marginTop: '10px', marginBottom: '8px' }}>
+                      {M4_BRIEFING.title}
+                    </h1>
+                  </div>
+
+                  <div style={{ fontSize: '14.5px', color: '#334155', lineHeight: '1.65' }}>
+                    <p style={{ marginBottom: '14px' }}>
+                      {M4_BRIEFING.scenario}
+                    </p>
+                    <p style={{ fontStyle: 'italic', color: '#64748b', marginBottom: '14px' }}>
+                      {M4_BRIEFING.context}
+                    </p>
+                    <p style={{ fontWeight: '700', color: '#0369a1' }}>
+                      Ready to build? Click Launch Lab to start your Kali workstation and connect to Horizon.
+                    </p>
+                  </div>
+
+                  <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      type="button"
+                      onClick={handleLaunchLabFromBriefing}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '12px 28px',
+                        backgroundColor: '#0284c7',
+                        color: '#ffffff',
+                        borderRadius: '10px',
+                        fontSize: '14px',
+                        fontWeight: '800',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 6px -1px rgba(2, 132, 199, 0.3)',
+                        border: 'none'
+                      }}
+                    >
+                      <span>{M4_BRIEFING.cta}</span>
+                      <ArrowRight size={16} />
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: '800',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.06em',
+                        backgroundColor: '#f0fdfa',
+                        color: '#0f766e',
+                        padding: '3px 10px',
+                        borderRadius: '12px'
+                      }}
+                    >
+                      Priya's Lab Briefing
+                    </span>
+                    <h1 style={{ fontSize: '22px', fontWeight: '900', color: '#0f172a', marginTop: '10px', marginBottom: '8px' }}>
+                      {currentTopic.lab?.title || `Lab ${topicNumber}`}
+                    </h1>
+                  </div>
+
+                  <div style={{ fontSize: '14.5px', color: '#334155', lineHeight: '1.65' }}>
+                    <div
+                      style={{
+                        backgroundColor: '#f8fafc',
+                        borderLeft: '4px solid #0d9488',
+                        padding: '14px 18px',
+                        borderRadius: '0 8px 8px 0',
+                        marginBottom: '16px',
+                        fontStyle: 'italic',
+                        color: '#1e293b'
+                      }}
+                    >
+                      "{currentTopic.lab?.priyaIntro}"
+                    </div>
+                    <p style={{ margin: 0, color: '#64748b', fontSize: '13.5px' }}>
+                      Your theory slides for this topic are complete. Open your workstation to complete the 3 hands-on flags.
+                    </p>
+                  </div>
+
+                  <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+                    {/* FIX (Diag 3): Open Lab previously called a dead or inconsistent handler; now unifies entry with 2-second resume animation and workstation state retention */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLaunchLoaderMode('resume');
+                      }}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '12px 28px',
+                        backgroundColor: '#0d9488',
+                        color: '#ffffff',
+                        borderRadius: '10px',
+                        fontSize: '14px',
+                        fontWeight: '800',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 6px -1px rgba(13, 148, 136, 0.3)',
+                        border: 'none'
+                      }}
+                    >
+                      <span>Open Lab</span>
+                      <ArrowRight size={16} />
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* STAGE B: Theory Slide View */}
+          {m4State.currentItemType === 'slide' && currentSlide && (
+            <div style={{ maxWidth: '1080px', margin: '0 auto', width: '100%' }}>
+              <TheorySlide
+                slide={currentSlide}
+                isFirstSlide={m4State.currentSlideIndex === 0}
+                isLastSlide={m4State.currentSlideIndex === currentTopic.slides.length - 1}
+                onNext={handleNextSlide}
+                onBack={handleBackSlide}
+                onFinishAndUnlockLab={handleFinishAndUnlockLab}
+              />
+            </div>
+          )}
+
+          {/* STAGE C: Lab Split-Screen View */}
+          {m4State.currentItemType === 'lab' && (
+            <div
+              id="lab-split-container"
+              style={{
+                flex: 1,
+                display: 'flex',
+                height: '100%',
+                position: 'relative',
+                overflow: 'hidden'
               }}
             >
+              {/* Left Panel: Lab Guide */}
+              {!workstationExpanded && (
+                <div
+                  style={{
+                    width: `${leftWidthPct}%`,
+                    height: '100%',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}
+                >
+                  <LabGuide
+                    topicNumber={topicNumber}
+                    labData={currentTopic.lab}
+                    onResetLab={handleResetLab}
+                    isReviewMode={isLabPassed}
+                  />
+                </div>
+              )}
+
+              {/* Draggable Divider */}
+              {!workstationExpanded && (
+                <div
+                  onMouseDown={handleMouseDownDivider}
+                  style={{
+                    width: '8px',
+                    cursor: 'col-resize',
+                    backgroundColor: isDraggingDivider ? '#0284c7' : 'transparent',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    userSelect: 'none',
+                    transition: 'background-color 150ms'
+                  }}
+                >
+                  <div style={{ width: '2px', height: '32px', backgroundColor: '#cbd5e1', borderRadius: '1px' }} />
+                </div>
+              )}
+
+              {/* Right Panel: Kali Workstation */}
               <div
                 style={{
-                  width: '56px',
-                  height: '56px',
-                  borderRadius: '16px',
-                  backgroundColor: '#e0f2fe',
-                  color: '#0284c7',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  flex: 1,
+                  height: '100%',
+                  overflow: 'hidden'
                 }}
               >
-                <Terminal size={28} />
+                <KaliWorkstation
+                  isExpanded={workstationExpanded}
+                  onToggleExpand={() => setWorkstationExpanded(!workstationExpanded)}
+                />
               </div>
-
-              <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a' }}>
-                Ready to Provision Your First Cloud?
-              </h3>
-
-              <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '520px', lineHeight: '1.6' }}>
-                Launch your dedicated containerized training environment. You'll complete 4 configuration-awareness tasks using the simulated Nimbus Cloud Console.
-              </p>
-
-              <button
-                type="button"
-                onClick={handleLaunchLabClick}
-                style={{
-                  backgroundColor: '#0284c7',
-                  color: '#ffffff',
-                  padding: '12px 28px',
-                  borderRadius: '10px',
-                  fontSize: '14px',
-                  fontWeight: '700',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  boxShadow: '0 4px 6px -1px rgba(2, 132, 199, 0.3)'
-                }}
-              >
-                <Play size={16} fill="#ffffff" />
-                <span>Launch Lab Environment</span>
-              </button>
             </div>
           )}
         </div>
+      </div>
+
+      {/* Lab Launch Animation Modal */}
+      {launchLoaderMode && (
+        <LabLaunchLoader
+          mode={launchLoaderMode}
+          onComplete={handleLaunchLoaderComplete}
+        />
       )}
 
-      {/* Reusable Lab Launch Loader Modal (Plays 4-6s animated sequence) */}
-      {isLaunching && <LabLaunchLoader onComplete={handleLaunchCompleted} />}
-
-      {/* Celebration Modal triggered upon Task 4 completion */}
-      {showCelebration && (
+      {/* Celebrations */}
+      {celebrationType === 'lab6_live' && (
         <CelebrationScreen
-          onContinueToNextModule={() => {
-            setShowCelebration(false);
-            navigateTo('curriculum');
+          type="lab6_live"
+          onContinue={() => {
+            setCelebrationType(null);
+            navigateToM4Item(6, 'slide', 0); // Jump to Topic 7 slide 1
           }}
-          onReviewModule={() => {
-            setShowCelebration(false);
+        />
+      )}
+
+      {celebrationType === 'm4_complete' && (
+        <CelebrationScreen
+          type="m4_complete"
+          onContinue={() => {
+            setCelebrationType(null);
+            completeM4Module();
+            navigateTo('curriculum');
           }}
         />
       )}

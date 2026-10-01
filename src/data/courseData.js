@@ -1,22 +1,21 @@
-// Course information, phases, and curriculum module definitions
+// CDAC Cloud Security Training Program Course Data
 export const COURSE_SUMMARY = {
-  title: "Cloud Security Training Program — Offensive + Defensive Cloud Security",
-  level: "Beginner → Intermediate, no prior experience required",
-  duration: "90 Hours total (55 Hrs Theory + 35 Hrs Hands-on Labs), 13 modules",
-  theoryHours: 55,
-  labHours: 35,
+  title: "Cloud Security Training Program: Offensive + Defensive Cloud Security",
+  duration: "90 hours (40 Hrs Theory + 50 Hrs Hands-on Labs), 13 modules",
+  theoryHours: 40,
+  labHours: 50,
   totalHours: 90,
   totalModules: 13,
   description:
-    "This course takes you from cloud computing basics to practical offensive and defensive cloud security — using your own hands-on training cloud. You'll build your own cloud environment, learn to attack it to understand real risks, rebuild it with proper security hardening, and finish by learning how to report findings professionally and understand compliance standards. Everything you learn is vendor-neutral and transferable to any real cloud platform.",
-  learningPhases: [
+    "This course takes you from cloud computing basics to practical offensive and defensive cloud security, using your own hands-on training cloud. You'll build a cloud environment, attack it to understand real risks, rebuild it with security hardening, and finish by reporting findings and understanding compliance standards. Everything is vendor-neutral and transferable to any real cloud.",
+  phases: [
     {
       id: "phase-1",
       number: 1,
       title: "Fundamentals",
-      tagline: "Understand the core concepts before building anything",
-      hoursTheory: 15,
-      hoursLab: 7,
+      tagline: "understand the core concepts before building.",
+      hoursTheory: 10,
+      hoursLab: 12,
       totalHours: 22,
       moduleCount: 3,
       badgeColor: "#0284c7"
@@ -25,20 +24,20 @@ export const COURSE_SUMMARY = {
       id: "phase-2",
       number: 2,
       title: "Build",
-      tagline: "Create your own cloud with basic/default configuration",
-      hoursTheory: 7,
-      hoursLab: 8,
+      tagline: "create your own cloud with basic configuration.",
+      hoursTheory: 5,
+      hoursLab: 10,
       totalHours: 15,
       moduleCount: 2,
-      badgeColor: "#059669"
+      badgeColor: "#0d9488"
     },
     {
       id: "phase-3",
       number: 3,
       title: "Attack",
-      tagline: "Attack your own cloud to understand its weaknesses",
-      hoursTheory: 18,
-      hoursLab: 11,
+      tagline: "attack your own cloud to understand its weaknesses.",
+      hoursTheory: 12,
+      hoursLab: 17,
       totalHours: 29,
       moduleCount: 4,
       badgeColor: "#dc2626"
@@ -47,10 +46,10 @@ export const COURSE_SUMMARY = {
       id: "phase-4",
       number: 4,
       title: "Rebuild & Harden",
-      tagline: "Rebuild the same environment using security hardening techniques",
-      hoursTheory: 11,
-      hoursLab: 6,
-      totalHours: 17,
+      tagline: "rebuild it using security hardening.",
+      hoursTheory: 10,
+      hoursLab: 11,
+      totalHours: 21,
       moduleCount: 3,
       badgeColor: "#d97706"
     },
@@ -58,51 +57,22 @@ export const COURSE_SUMMARY = {
       id: "phase-5",
       number: 5,
       title: "Report & Compliance",
-      tagline: "Learn professional reporting, GRC, and mandatory security standards",
-      hoursTheory: 4,
-      hoursLab: 3,
+      tagline: "professional reporting, GRC, and mandatory standards.",
+      hoursTheory: 3,
+      hoursLab: 4,
       totalHours: 7,
       moduleCount: 1,
       badgeColor: "#4f46e5"
     }
   ],
   outcomes: [
-    "Explain core cloud architecture, virtualization, software-defined networking, and shared responsibility.",
-    "Harden cloud environments using least-privilege IAM policies, network segmentation, and CIS Benchmarks.",
-    "Identify and exploit OWASP Top 10 vulnerabilities within containerized cloud applications and REST APIs.",
-    "Perform an authorized cloud penetration test covering reconnaissance, credential stuffing, and privilege escalation.",
-    "Ingest and analyze VPC flow logs, cloud audit trails, and container metrics for incident detection and triage.",
-    "Produce professional penetration test and incident response reports compliant with modern GRC standards."
-  ],
-  tools: {
-    reconAndOffensive: [
-      "Nmap",
-      "Subfinder",
-      "Amass",
-      "Shodan",
-      "Censys",
-      "Burp Suite",
-      "OWASP ZAP",
-      "Gitleaks",
-      "TruffleHog"
-    ],
-    defensiveAndAudit: [
-      "CIS Benchmarks",
-      "OpenSCAP",
-      "Nessus",
-      "OpenVAS",
-      "Trivy",
-      "Checkov / tfsec",
-      "WAF Tooling"
-    ],
-    cloudNative: [
-      "Docker",
-      "Kubernetes",
-      "Terraform",
-      "CI/CD Pipelines",
-      "Linux CLI"
-    ]
-  }
+    "Explain cloud architecture and how major providers organise services.",
+    "Configure and harden networks, VMs, storage, databases, and identities using least privilege and CIS benchmarks.",
+    "Apply the OWASP Top 10 to cloud-hosted applications and APIs.",
+    "Understand and apply the CSA Top 10 cloud attack techniques to plan and execute an authorized penetration test against a cloud environment.",
+    "Use logs and monitoring to detect suspicious activity and support incident response.",
+    "Produce a professional penetration-test and incident-response report."
+  ]
 };
 
 export const MODULES_DATA = [
@@ -114,10 +84,10 @@ export const MODULES_DATA = [
     phaseNumber: 1,
     phaseName: "Fundamentals",
     title: "IT, Networking & Security Foundations",
-    hoursTheory: 4,
-    hoursLab: 2,
+    hoursTheory: 3,
+    hoursLab: 3,
     totalHours: 6,
-    description: "OS basics, Linux CLI, networking fundamentals, CIA Triad, vulnerability vs. penetration testing.",
+    description: "OS basics, Linux CLI, networking fundamentals, CIA Triad, vulnerability vs penetration testing.",
     isAvailableDemo: false
   },
   {
@@ -127,8 +97,8 @@ export const MODULES_DATA = [
     phaseNumber: 1,
     phaseName: "Fundamentals",
     title: "Cloud Computing Concepts & Architecture",
-    hoursTheory: 6,
-    hoursLab: 3,
+    hoursTheory: 4,
+    hoursLab: 5,
     totalHours: 9,
     description: "IaaS/PaaS/SaaS, deployment models, core cloud building blocks, shared responsibility model.",
     isAvailableDemo: false
@@ -140,8 +110,8 @@ export const MODULES_DATA = [
     phaseNumber: 1,
     phaseName: "Fundamentals",
     title: "Cloud Identity & Access Management Basics",
-    hoursTheory: 5,
-    hoursLab: 2,
+    hoursTheory: 3,
+    hoursLab: 4,
     totalHours: 7,
     description: "Users, roles, policies, permissions, MFA, least privilege.",
     isAvailableDemo: false
@@ -154,11 +124,11 @@ export const MODULES_DATA = [
     phaseId: "phase-2",
     phaseNumber: 2,
     phaseName: "Build",
-    title: "Our First Cloud Configuration — Building Your Own Cloud",
-    hoursTheory: 3,
-    hoursLab: 4,
+    title: "Our First Cloud Configuration (QuickMart)",
+    hoursTheory: 2,
+    hoursLab: 5,
     totalHours: 7,
-    description: "Deploy your first VM, storage, and network — using default settings, the way most people do it the first time.",
+    description: "Deploy QuickMart's network, router, security groups, VMs, and floating IP on OpenStack.",
     isAvailableDemo: true
   },
   {
@@ -168,10 +138,10 @@ export const MODULES_DATA = [
     phaseNumber: 2,
     phaseName: "Build",
     title: "Deploying Applications, Storage & Services on Your Cloud",
-    hoursTheory: 4,
-    hoursLab: 4,
+    hoursTheory: 3,
+    hoursLab: 5,
     totalHours: 8,
-    description: "Deploying an application, database, and containerized service onto your environment.",
+    description: "Deploying application code, databases, and containerized microservices on your cloud.",
     isAvailableDemo: false
   },
 
@@ -182,11 +152,11 @@ export const MODULES_DATA = [
     phaseId: "phase-3",
     phaseNumber: 3,
     phaseName: "Attack",
-    title: "Reconnaissance & Enumeration of Your Cloud Environment",
-    hoursTheory: 4,
-    hoursLab: 3,
+    title: "Reconnaissance & Enumeration of Your Cloud",
+    hoursTheory: 3,
+    hoursLab: 4,
     totalHours: 7,
-    description: "Reconnaissance and enumeration against your own deployed cloud.",
+    description: "Reconnaissance and enumeration against your own deployed cloud environment.",
     isAvailableDemo: false
   },
   {
@@ -196,10 +166,10 @@ export const MODULES_DATA = [
     phaseNumber: 3,
     phaseName: "Attack",
     title: "Attacking Identity & Privilege Escalation",
-    hoursTheory: 5,
-    hoursLab: 3,
+    hoursTheory: 3,
+    hoursLab: 5,
     totalHours: 8,
-    description: "Exploiting identity misconfigurations and privilege escalation paths.",
+    description: "Exploiting identity misconfigurations, token abuse, and privilege escalation paths.",
     isAvailableDemo: false
   },
   {
@@ -209,10 +179,10 @@ export const MODULES_DATA = [
     phaseNumber: 3,
     phaseName: "Attack",
     title: "Attacking Applications & APIs (Offensive OWASP Top 10)",
-    hoursTheory: 5,
-    hoursLab: 2,
+    hoursTheory: 3,
+    hoursLab: 4,
     totalHours: 7,
-    description: "Testing your deployed app/APIs against the OWASP Top 10.",
+    description: "Testing cloud-hosted applications and APIs against the OWASP Top 10 vulnerabilities.",
     isAvailableDemo: false
   },
   {
@@ -222,10 +192,10 @@ export const MODULES_DATA = [
     phaseNumber: 3,
     phaseName: "Attack",
     title: "Attacking Containers, CI/CD & Cloud Infrastructure",
-    hoursTheory: 4,
-    hoursLab: 3,
+    hoursTheory: 3,
+    hoursLab: 4,
     totalHours: 7,
-    description: "Attacking exposed containers, CI/CD pipelines, and IaC weaknesses.",
+    description: "Attacking exposed containers, CI/CD pipelines, and infrastructure as code weaknesses.",
     isAvailableDemo: false
   },
 
@@ -237,10 +207,10 @@ export const MODULES_DATA = [
     phaseNumber: 4,
     phaseName: "Rebuild & Harden",
     title: "Network & Compute Hardening",
-    hoursTheory: 4,
-    hoursLab: 2,
-    totalHours: 6,
-    description: "Hardening networking and compute — firewalls, segmentation, CIS benchmarks.",
+    hoursTheory: 3,
+    hoursLab: 4,
+    totalHours: 7,
+    description: "Hardening networks and compute workloads — firewalls, segmentation, and CIS benchmarks.",
     isAvailableDemo: false
   },
   {
@@ -250,10 +220,10 @@ export const MODULES_DATA = [
     phaseNumber: 4,
     phaseName: "Rebuild & Harden",
     title: "Data, Storage & Identity Hardening",
-    hoursTheory: 4,
-    hoursLab: 2,
+    hoursTheory: 3,
+    hoursLab: 3,
     totalHours: 6,
-    description: "Securing storage, databases, secrets, and identity.",
+    description: "Securing storage buckets, database instances, secrets, and enforcing least privilege.",
     isAvailableDemo: false
   },
   {
@@ -262,11 +232,11 @@ export const MODULES_DATA = [
     phaseId: "phase-4",
     phaseNumber: 4,
     phaseName: "Rebuild & Harden",
-    title: "Secure DevSecOps — Hardening CI/CD & Containers",
+    title: "Secure DevSecOps: Hardening CI/CD & Containers",
     hoursTheory: 3,
-    hoursLab: 2,
-    totalHours: 5,
-    description: "Hardening CI/CD pipelines, container images, and Kubernetes configs.",
+    hoursLab: 4,
+    totalHours: 7,
+    description: "Hardening CI/CD pipelines, container images, and Kubernetes configurations.",
     isAvailableDemo: false
   },
 
@@ -278,10 +248,10 @@ export const MODULES_DATA = [
     phaseNumber: 5,
     phaseName: "Report & Compliance",
     title: "Reporting, Governance, Risk & Compliance Capstone",
-    hoursTheory: 4,
-    hoursLab: 3,
+    hoursTheory: 3,
+    hoursLab: 4,
     totalHours: 7,
-    description: "Writing a professional pentest report and understanding GRC/compliance standards.",
+    description: "Professional penetration test reporting, incident response documentation, and GRC standards.",
     isAvailableDemo: false
   }
 ];

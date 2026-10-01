@@ -17,28 +17,30 @@ export const DefaultConfigScene = ({ isReplaying }) => {
         <line x1="40" y1="185" x2="480" y2="185" stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" />
 
         {/* Shrugging Stick Figure */}
-        <g transform="translate(110, 70)" style={{ animation: 'shrugShoulders 2.5s ease-in-out infinite' }}>
-          {/* Head tilted */}
-          <circle cx="20" cy="20" r="14" fill="#ffffff" stroke="#0f172a" strokeWidth="2.5" />
-          {/* Shrug mouth / smile */}
-          <path d="M14 24 Q20 28 26 23" stroke="#0f172a" strokeWidth="1.5" fill="none" />
-          {/* Torso */}
-          <line x1="20" y1="34" x2="20" y2="80" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
+        <g transform="translate(110, 70)">
+          <g style={{ animation: 'shrugShoulders 2.5s ease-in-out infinite', transformBox: 'fill-box', transformOrigin: 'center' }}>
+            {/* Head tilted */}
+            <circle cx="20" cy="20" r="14" fill="#ffffff" stroke="#0f172a" strokeWidth="2.5" />
+            {/* Shrug mouth / smile */}
+            <path d="M14 24 Q20 28 26 23" stroke="#0f172a" strokeWidth="1.5" fill="none" />
+            {/* Torso */}
+            <line x1="20" y1="34" x2="20" y2="80" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
 
-          {/* Shrugging Arms (Palms up) */}
-          <path d="M20 44 L5 48 L-6 36" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          <path d="M20 44 L35 48 L46 36" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            {/* Shrugging Arms (Palms up) */}
+            <path d="M20 44 L5 48 L-6 36" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            <path d="M20 44 L35 48 L46 36" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
 
-          {/* Legs */}
-          <line x1="20" y1="80" x2="8" y2="115" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="20" y1="80" x2="32" y2="115" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
+            {/* Legs */}
+            <line x1="20" y1="80" x2="8" y2="115" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1="20" y1="80" x2="32" y2="115" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
 
-          {/* Thought bubble */}
-          <g>
-            <rect x="-35" y="-22" width="110" height="24" rx="12" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5" />
-            <text x="20" y="-7" textAnchor="middle" fontSize="9.5" fontWeight="600" fill="#64748b">
-              "Just keep defaults?"
-            </text>
+            {/* Thought bubble */}
+            <g>
+              <rect x="-35" y="-22" width="110" height="24" rx="12" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5" />
+              <text x="20" y="-7" textAnchor="middle" fontSize="9.5" fontWeight="600" fill="#64748b">
+                "Just keep defaults?"
+              </text>
+            </g>
           </g>
         </g>
 

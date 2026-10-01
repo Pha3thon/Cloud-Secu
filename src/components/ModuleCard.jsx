@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, Unlock, CheckCircle2, Clock, Sparkles, ArrowRight } from 'lucide-react';
+import { Lock, Unlock, CheckCircle2, ArrowRight } from 'lucide-react';
 
 export const ModuleCard = ({ module, isUnlocked, isCompleted, onSelectModule }) => {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -58,8 +58,8 @@ export const ModuleCard = ({ module, isUnlocked, isCompleted, onSelectModule }) 
         }
       }}
     >
-      {/* Top Header: Code, Badges, Status */}
       <div>
+        {/* Top Header: Code, Badges, Status */}
         <div
           style={{
             display: 'flex',
@@ -83,7 +83,7 @@ export const ModuleCard = ({ module, isUnlocked, isCompleted, onSelectModule }) 
               {module.code}
             </span>
 
-            {/* Demo Module Special Badge */}
+            {/* Small Demo Badge */}
             {isDemoActive && (
               <span
                 style={{
@@ -93,102 +93,97 @@ export const ModuleCard = ({ module, isUnlocked, isCompleted, onSelectModule }) 
                   backgroundColor: '#e0f2fe',
                   border: '1px solid #bae6fd',
                   padding: '2px 8px',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px'
+                  borderRadius: '12px'
                 }}
               >
-                <Sparkles size={11} />
-                <span>Demo Module — Available Now</span>
+                Demo Module — Available Now
               </span>
             )}
           </div>
 
-          {/* Status Badge */}
+          {/* Module Status Badge: Locked / Unlocked / Completed */}
           <div>
             {isCompleted ? (
               <span
                 style={{
                   fontSize: '11px',
                   fontWeight: '700',
-                  color: '#065f46',
                   backgroundColor: '#ecfdf5',
-                  padding: '3px 8px',
+                  color: '#065f46',
+                  padding: '3px 10px',
                   borderRadius: '12px',
-                  display: 'flex',
+                  display: 'inline-flex',
                   alignItems: 'center',
                   gap: '4px'
                 }}
               >
-                <CheckCircle2 size={13} color="#10b981" />
-                <span>Completed ✅</span>
+                <CheckCircle2 size={12} />
+                Completed
               </span>
             ) : isUnlocked ? (
               <span
                 style={{
                   fontSize: '11px',
                   fontWeight: '700',
+                  backgroundColor: '#e0f2fe',
                   color: '#0369a1',
-                  backgroundColor: '#f0f9ff',
-                  padding: '3px 8px',
+                  padding: '3px 10px',
                   borderRadius: '12px',
-                  display: 'flex',
+                  display: 'inline-flex',
                   alignItems: 'center',
                   gap: '4px'
                 }}
               >
-                <Unlock size={12} color="#0284c7" />
-                <span>Unlocked</span>
+                <Unlock size={12} />
+                Unlocked
               </span>
             ) : (
               <span
                 style={{
                   fontSize: '11px',
-                  fontWeight: '600',
-                  color: '#94a3b8',
-                  backgroundColor: '#f8fafc',
-                  padding: '3px 8px',
+                  fontWeight: '700',
+                  backgroundColor: '#f1f5f9',
+                  color: '#64748b',
+                  padding: '3px 10px',
                   borderRadius: '12px',
-                  display: 'flex',
+                  display: 'inline-flex',
                   alignItems: 'center',
                   gap: '4px'
                 }}
               >
                 <Lock size={12} />
-                <span>Locked 🔒</span>
+                Locked
               </span>
             )}
           </div>
         </div>
 
-        {/* Title */}
+        {/* Title & Description */}
         <h3
           style={{
-            fontSize: '15.5px',
+            fontSize: '16px',
             fontWeight: '700',
-            color: '#0f172a',
-            marginBottom: '8px',
-            lineHeight: '1.4'
+            color: isUnlocked || isDemoActive ? '#0f172a' : '#64748b',
+            lineHeight: '1.35',
+            marginBottom: '6px'
           }}
         >
           {module.title}
         </h3>
 
-        {/* One line description */}
         <p
           style={{
             fontSize: '12.5px',
             color: '#64748b',
             lineHeight: '1.5',
-            marginBottom: '16px'
+            marginBottom: '14px'
           }}
         >
           {module.description}
         </p>
       </div>
 
-      {/* Footer Info & Action */}
+      {/* Footer: Theory + Lab Hours Split & Action */}
       <div
         style={{
           borderTop: '1px solid #f1f5f9',
@@ -196,75 +191,51 @@ export const ModuleCard = ({ module, isUnlocked, isCompleted, onSelectModule }) 
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          fontSize: '12px'
+          marginTop: 'auto'
         }}
       >
-        <span
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            color: '#475569',
-            fontWeight: '500'
-          }}
-        >
-          <Clock size={13} color="#64748b" />
-          <span>
-            {module.hoursTheory}T + {module.hoursLab}L = {module.totalHours} Hrs
-          </span>
+        <span style={{ fontSize: '11.5px', color: '#475569', fontWeight: '600' }}>
+          {module.hoursTheory}T + {module.hoursLab}L = {module.totalHours} Hours
         </span>
 
-        {isUnlocked ? (
+        {(isUnlocked || isDemoActive) && (
           <span
             style={{
-              color: '#0284c7',
+              fontSize: '12px',
               fontWeight: '700',
-              display: 'flex',
+              color: '#0284c7',
+              display: 'inline-flex',
               alignItems: 'center',
               gap: '4px'
             }}
           >
-            <span>{isCompleted ? 'Review' : 'Start Module'}</span>
+            <span>{isCompleted ? 'Review' : 'Open'}</span>
             <ArrowRight size={13} />
           </span>
-        ) : (
-          <span style={{ color: '#94a3b8', fontSize: '11px' }}>Complete prior module</span>
         )}
       </div>
 
-      {/* Tooltip for locked cards */}
-      {showTooltip && !isUnlocked && (
+      {/* Locked Tooltip Popover */}
+      {showTooltip && !isUnlocked && !isDemoActive && (
         <div
-          className="animate-popover"
           style={{
             position: 'absolute',
-            bottom: '100%',
+            bottom: '105%',
             left: '50%',
             transform: 'translateX(-50%)',
-            marginBottom: '8px',
             backgroundColor: '#0f172a',
             color: '#ffffff',
+            fontSize: '11.5px',
+            fontWeight: '600',
             padding: '6px 12px',
             borderRadius: '6px',
-            fontSize: '11.5px',
-            fontWeight: '500',
             whiteSpace: 'nowrap',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-            zIndex: 30
+            zIndex: 50,
+            pointerEvents: 'none'
           }}
         >
           Complete the previous module to unlock.
-          <div
-            style={{
-              position: 'absolute',
-              top: '100%',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              borderWidth: '5px',
-              borderStyle: 'solid',
-              borderColor: '#0f172a transparent transparent transparent'
-            }}
-          />
         </div>
       )}
     </div>

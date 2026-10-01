@@ -118,9 +118,14 @@
     opacity: 1;
   }
   100% {
-    transform: translateX(180px);
+    transform: translateX(265px);
     opacity: 0;
   }
+}
+
+/* Ensure SVG animated elements transform smoothly from their own bounding box */
+svg g, svg rect, svg path, svg circle, svg polygon {
+  transform-box: fill-box;
 }
 
 /* Drawing stroke animation */

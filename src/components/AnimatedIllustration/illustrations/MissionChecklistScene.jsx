@@ -24,31 +24,33 @@ export const MissionChecklistScene = ({ isReplaying }) => {
         <line x1="40" y1="185" x2="480" y2="185" stroke="#cbd5e1" strokeWidth="2.5" strokeLinecap="round" />
 
         {/* Stick figure giving thumbs up */}
-        <g transform="translate(100, 70)" style={{ animation: 'thumbsUpBounce 2s ease-in-out infinite' }}>
-          {/* Head */}
-          <circle cx="20" cy="20" r="14" fill="#ffffff" stroke="#0f172a" strokeWidth="2.5" />
-          {/* Confident smile */}
-          <path d="M16 23 Q20 28 24 23" stroke="#0f172a" strokeWidth="1.5" fill="none" />
-          {/* Torso */}
-          <line x1="20" y1="34" x2="20" y2="80" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
+        <g transform="translate(100, 70)">
+          <g style={{ animation: 'thumbsUpBounce 2s ease-in-out infinite', transformBox: 'fill-box', transformOrigin: 'center' }}>
+            {/* Head */}
+            <circle cx="20" cy="20" r="14" fill="#ffffff" stroke="#0f172a" strokeWidth="2.5" />
+            {/* Confident smile */}
+            <path d="M16 23 Q20 28 24 23" stroke="#0f172a" strokeWidth="1.5" fill="none" />
+            {/* Torso */}
+            <line x1="20" y1="34" x2="20" y2="80" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
 
-          {/* Thumbs up arm */}
-          <path d="M20 44 L38 35 L48 24" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          {/* Fist with thumb up */}
-          <circle cx="48" cy="24" r="4" fill="#0f172a" />
-          <line x1="48" y1="24" x2="48" y2="16" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" />
+            {/* Thumbs up arm */}
+            <path d="M20 44 L38 35 L48 24" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            {/* Fist with thumb up */}
+            <circle cx="48" cy="24" r="4" fill="#0f172a" />
+            <line x1="48" y1="24" x2="48" y2="16" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" />
 
-          {/* Other arm on hip */}
-          <path d="M20 44 L6 50 L12 60" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            {/* Other arm on hip */}
+            <path d="M20 44 L6 50 L12 60" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
 
-          {/* Legs */}
-          <line x1="20" y1="80" x2="10" y2="115" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="20" y1="80" x2="30" y2="115" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
+            {/* Legs */}
+            <line x1="20" y1="80" x2="10" y2="115" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1="20" y1="80" x2="30" y2="115" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
 
-          {/* Speech / label */}
-          <text x="20" y="-8" textAnchor="middle" fontSize="11" fontWeight="700" fill="#0284c7">
-            "Ready for Lab!"
-          </text>
+            {/* Speech / label */}
+            <text x="20" y="-8" textAnchor="middle" fontSize="11" fontWeight="700" fill="#0284c7">
+              "Ready for Lab!"
+            </text>
+          </g>
         </g>
 
         {/* Mission Checklist Clipboard */}

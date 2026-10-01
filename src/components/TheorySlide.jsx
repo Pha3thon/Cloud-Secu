@@ -1,33 +1,22 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, HelpCircle, Lightbulb, CheckCircle } from 'lucide-react';
-import { AnimatedIllustration } from './AnimatedIllustration/AnimatedIllustration';
-import { GlossaryModal } from './GlossaryModal';
+import { ChevronLeft, ChevronRight, BookOpen, Lightbulb, ArrowRight, Bookmark } from 'lucide-react';
+import { SceneAnimation } from './SceneAnimation';
+import { KnowMoreModal } from './KnowMoreModal';
 
 export const TheorySlide = ({
-  slides,
-  currentSlideIndex,
-  onSlideChange,
-  maxSlideVisited,
-  onCompleteTheory
+  slide,
+  isFirstSlide = false,
+  isLastSlide = false,
+  onNext,
+  onBack,
+  onFinishAndUnlockLab
 }) => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const currentSlide = slides[currentSlideIndex];
-  const totalSlides = slides.length;
-  const isLastSlide = currentSlideIndex === totalSlides - 1;
+  const [knowMoreOpen, setKnowMoreOpen] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
 
-  const handleNext = () => {
-    if (isLastSlide) {
-      onCompleteTheory();
-    } else {
-      onSlideChange(currentSlideIndex + 1);
-    }
-  };
+  if (!slide) return null;
 
-  const handleBack = () => {
-    if (currentSlideIndex > 0) {
-      onSlideChange(currentSlideIndex - 1);
-    }
-  };
+  const lines = slide.textLines || [];
 
   return (
     <div
@@ -41,10 +30,10 @@ export const TheorySlide = ({
         flexDirection: 'column'
       }}
     >
-      {/* Top Header & Progress */}
+      {/* Top Bar with Slide Code & Optional Recap Chip */}
       <div
         style={{
-          padding: '16px 24px',
+          padding: '12px 24px',
           borderBottom: '1px solid #f1f5f9',
           display: 'flex',
           alignItems: 'center',
@@ -52,267 +41,247 @@ export const TheorySlide = ({
           backgroundColor: '#fafbfc'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span
             style={{
-              fontSize: '12px',
-              fontWeight: '700',
-              padding: '3px 10px',
-              borderRadius: '20px',
+              fontSize: '11px',
+              fontWeight: '800',
+              fontFamily: 'monospace',
+              padding: '2px 8px',
+              borderRadius: '4px',
               backgroundColor: '#e0f2fe',
               color: '#0369a1'
             }}
           >
-            Theory Stage
+            {slide.code}
           </span>
-          <span style={{ fontSize: '13px', fontWeight: '600', color: '#64748b' }}>
-            Slide {currentSlideIndex + 1} of {totalSlides}
+          <span style={{ fontSize: '13px', fontWeight: '700', color: '#0f172a' }}>
+            {slide.title}
           </span>
         </div>
 
-        {/* Slide Progress Dots / Indicators */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          {slides.map((s, idx) => {
-            const isCurrent = idx === currentSlideIndex;
-            const isVisited = idx <= maxSlideVisited - 1;
-
-            return (
-              <button
-                key={s.id}
-                onClick={() => isVisited && onSlideChange(idx)}
-                disabled={!isVisited}
-                title={isVisited ? `Go to Slide ${idx + 1}` : 'Complete current slide first'}
-                style={{
-                  width: isCurrent ? '24px' : '8px',
-                  height: '8px',
-                  borderRadius: '4px',
-                  backgroundColor: isCurrent ? '#0284c7' : isVisited ? '#bae6fd' : '#e2e8f0',
-                  transition: 'all 0.25s ease',
-                  cursor: isVisited ? 'pointer' : 'not-allowed'
-                }}
-              />
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Main Slide Content Area */}
-      <div
-        key={currentSlide.id}
-        className="animate-slide-in"
-        style={{
-          padding: '24px 28px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px'
-        }}
-      >
-        {/* Animated Visual Hero Illustration */}
-        <AnimatedIllustration animationType={currentSlide.animationType} />
-
-        {/* Slide Title */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h2
+        {/* Optional Recap Chip */}
+        {slide.recapChip && (
+          <span
             style={{
-              fontSize: '20px',
-              fontWeight: '700',
-              color: '#0f172a',
-              letterSpacing: '-0.01em'
-            }}
-          >
-            {currentSlide.title}
-          </h2>
-
-          {/* Know More Secondary Trigger Button */}
-          {currentSlide.knowMore && (
-            <button
-              type="button"
-              onClick={() => setModalOpen(true)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '6px 12px',
-                borderRadius: '8px',
-                fontSize: '12.5px',
-                fontWeight: '600',
-                backgroundColor: '#f0f9ff',
-                color: '#0369a1',
-                border: '1px solid #bae6fd',
-                transition: 'all 0.15s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#e0f2fe';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#f0f9ff';
-              }}
-            >
-              <HelpCircle size={15} />
-              <span>Know More</span>
-            </button>
-          )}
-        </div>
-
-        {/* 4-5 Lines of plain, high-clarity text */}
-        <div
-          style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '10px',
-            lineHeight: '1.7',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px'
-          }}
-        >
-          {currentSlide.textLines.map((line, index) => (
-            <p
-              key={index}
-              style={{
-                fontSize: '14.5px',
-                color: '#334155'
-              }}
-            >
-              {line}
-            </p>
-          ))}
-        </div>
-
-        {/* Real-Life Example Callout Box */}
-        {currentSlide.realLifeExample && (
-          <div
-            style={{
-              backgroundColor: '#fffbeb',
+              fontSize: '11px',
+              fontWeight: '600',
+              backgroundColor: '#f1f5f9',
+              color: '#475569',
+              padding: '2px 10px',
               borderRadius: '12px',
-              border: '1px solid #fef3c7',
-              padding: '14px 18px',
               display: 'flex',
-              alignItems: 'flex-start',
-              gap: '12px'
+              alignItems: 'center',
+              gap: '4px'
             }}
           >
-            <div
-              style={{
-                backgroundColor: '#fef3c7',
-                padding: '8px',
-                borderRadius: '8px',
-                color: '#d97706',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <Lightbulb size={18} />
-            </div>
-            <div>
-              <h4
-                style={{
-                  fontSize: '12.5px',
-                  fontWeight: '700',
-                  color: '#92400e',
-                  marginBottom: '3px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.04em'
-                }}
-              >
-                Real-Life Analogy: {currentSlide.realLifeExample.title}
-              </h4>
-              <p
-                style={{
-                  fontSize: '13.5px',
-                  color: '#78350f',
-                  lineHeight: '1.55'
-                }}
-              >
-                {currentSlide.realLifeExample.analogy}
-              </p>
-            </div>
-          </div>
+            <Bookmark size={11} color="#0284c7" />
+            {slide.recapChip}
+          </span>
         )}
       </div>
 
-      {/* Slide Navigation Controls */}
+      {/* Main Slide Layout: Text & Callouts on Left, Scene Animation on Right */}
       <div
         style={{
-          padding: '18px 28px',
+          padding: '28px 24px',
+          display: 'grid',
+          gridTemplateColumns: '1.2fr 1fr',
+          gap: '32px',
+          alignItems: 'start'
+        }}
+      >
+        {/* Left Column: Title, Synced Sentences, Real-Life Callout, Know More */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div>
+            <h2
+              style={{
+                fontSize: '22px',
+                fontWeight: '800',
+                color: '#0f172a',
+                letterSpacing: '-0.02em',
+                lineHeight: '1.3',
+                marginBottom: '14px'
+              }}
+            >
+              {slide.title}
+            </h2>
+
+            {/* Sentences with soft highlight synced to timeline */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {lines.map((line, idx) => {
+                const isActive = activeStep === idx;
+                return (
+                  <p
+                    key={idx}
+                    onMouseEnter={() => setActiveStep(idx)}
+                    style={{
+                      fontSize: '14px',
+                      color: isActive ? '#0f172a' : '#475569',
+                      lineHeight: '1.6',
+                      margin: 0,
+                      padding: '4px 8px',
+                      borderRadius: '6px',
+                      backgroundColor: isActive ? 'rgba(224, 242, 254, 0.45)' : 'transparent',
+                      transition: 'all 200ms ease',
+                      cursor: 'default'
+                    }}
+                  >
+                    {line}
+                  </p>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Real-Life Callout */}
+          {slide.realLifeExample && (
+            <div
+              style={{
+                padding: '14px 16px',
+                borderRadius: '10px',
+                backgroundColor: '#fffbeb',
+                border: '1px solid #fef3c7',
+                display: 'flex',
+                gap: '12px',
+                alignItems: 'flex-start'
+              }}
+            >
+              <Lightbulb size={18} color="#d97706" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: '#b45309', letterSpacing: '0.04em', marginBottom: '2px' }}>
+                  Real-Life Analogy — {slide.realLifeExample.title}
+                </div>
+                <div style={{ fontSize: '12.5px', color: '#92400e', lineHeight: '1.45', fontStyle: 'italic' }}>
+                  "{slide.realLifeExample.analogy}"
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Optional Know More Button */}
+          {slide.knowMore && (
+            <div>
+              <button
+                type="button"
+                onClick={() => setKnowMoreOpen(true)}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '7px 14px',
+                  borderRadius: '6px',
+                  backgroundColor: '#f0f9ff',
+                  border: '1px solid #bae6fd',
+                  color: '#0369a1',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  cursor: 'pointer'
+                }}
+              >
+                <BookOpen size={13} />
+                <span>Know More: {slide.knowMore.title}</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Right Column: Scene Animation */}
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <SceneAnimation
+            sceneKey={slide.sceneKey}
+            activeStep={activeStep}
+            onStepChange={setActiveStep}
+            stepCount={Math.max(lines.length, 3)}
+          />
+        </div>
+      </div>
+
+      {/* Bottom Navigation Footer */}
+      <div
+        style={{
+          padding: '16px 24px',
           borderTop: '1px solid #f1f5f9',
+          backgroundColor: '#fafbfc',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: '#fafbfc'
+          justifyContent: 'space-between'
         }}
       >
         <button
-          onClick={handleBack}
-          disabled={currentSlideIndex === 0}
+          type="button"
+          onClick={onBack}
+          disabled={isFirstSlide}
           style={{
-            display: 'flex',
+            display: 'inline-flex',
             alignItems: 'center',
             gap: '6px',
-            padding: '9px 16px',
+            padding: '8px 16px',
             borderRadius: '8px',
-            fontSize: '13.5px',
+            border: '1px solid #cbd5e1',
+            backgroundColor: isFirstSlide ? '#f8fafc' : '#ffffff',
+            color: isFirstSlide ? '#94a3b8' : '#334155',
+            fontSize: '13px',
             fontWeight: '600',
-            color: currentSlideIndex === 0 ? '#94a3b8' : '#475569',
-            backgroundColor: '#ffffff',
-            border: '1px solid #e2e8f0',
-            cursor: currentSlideIndex === 0 ? 'not-allowed' : 'pointer',
-            transition: 'all 0.15s ease'
-          }}
-          onMouseEnter={(e) => {
-            if (currentSlideIndex > 0) {
-              e.currentTarget.style.backgroundColor = '#f1f5f9';
-              e.currentTarget.style.color = '#0f172a';
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#ffffff';
-            e.currentTarget.style.color = currentSlideIndex === 0 ? '#94a3b8' : '#475569';
+            cursor: isFirstSlide ? 'not-allowed' : 'pointer'
           }}
         >
           <ChevronLeft size={16} />
-          <span>Previous</span>
+          <span>Back</span>
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Next / Complete Button */}
+        {isLastSlide ? (
           <button
-            onClick={handleNext}
+            type="button"
+            onClick={onFinishAndUnlockLab}
             style={{
-              display: 'flex',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '9px 20px',
+              borderRadius: '8px',
+              backgroundColor: '#059669',
+              color: '#ffffff',
+              fontSize: '13px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              border: 'none',
+              boxShadow: '0 2px 4px rgba(5, 150, 105, 0.2)'
+            }}
+          >
+            <span>Finish & Unlock Lab</span>
+            <ArrowRight size={15} />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onNext}
+            style={{
+              display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
               padding: '9px 20px',
               borderRadius: '8px',
-              fontSize: '13.5px',
-              fontWeight: '600',
+              backgroundColor: '#0284c7',
               color: '#ffffff',
-              backgroundColor: isLastSlide ? '#059669' : '#0284c7',
-              boxShadow: isLastSlide
-                ? '0 2px 4px rgba(5, 150, 105, 0.25)'
-                : '0 2px 4px rgba(2, 132, 199, 0.25)',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = isLastSlide ? '#047857' : '#0369a1';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = isLastSlide ? '#059669' : '#0284c7';
+              fontSize: '13px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              border: 'none'
             }}
           >
-            <span>{isLastSlide ? 'Finish Theory & Unlock Lab' : 'Next Concept'}</span>
-            {isLastSlide ? <CheckCircle size={16} /> : <ChevronRight size={16} />}
+            <span>Next</span>
+            <ChevronRight size={16} />
           </button>
-        </div>
+        )}
       </div>
 
       {/* Know More Modal */}
-      {currentSlide.knowMore && (
-        <GlossaryModal
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-          title={currentSlide.title}
-          content={currentSlide.knowMore}
+      {slide.knowMore && (
+        <KnowMoreModal
+          isOpen={knowMoreOpen}
+          onClose={() => setKnowMoreOpen(false)}
+          knowMoreData={slide.knowMore}
         />
       )}
     </div>

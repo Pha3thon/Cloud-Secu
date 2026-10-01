@@ -191,6 +191,33 @@ export const SequentialTaskList = ({
                   {task.description}
                 </p>
 
+                {/* Optional Task Reference Image */}
+                {task.imageUrl && (
+                  <div
+                    style={{
+                      borderRadius: '10px',
+                      overflow: 'hidden',
+                      border: '1px solid #e2e8f0',
+                      backgroundColor: '#f8fafc',
+                      maxHeight: '260px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <img
+                      src={task.imageUrl}
+                      alt={task.title}
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: '260px',
+                        objectFit: 'contain',
+                        display: 'block'
+                      }}
+                    />
+                  </div>
+                )}
+
                 {/* Hint Button & Popover */}
                 <div style={{ position: 'relative' }}>
                   <button

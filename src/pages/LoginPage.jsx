@@ -1,26 +1,39 @@
 import React, { useState } from 'react';
-import { Shield, Lock, User, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useCourse } from '../context/CourseContext';
 
 export const LoginPage = () => {
   const { login } = useCourse();
   const [username, setUsername] = useState('student');
   const [password, setPassword] = useState('cloudsec123');
+  const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // // TODO: connect real backend authentication
+  // // TODO: connect real backend
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrorMsg('');
+
     setTimeout(() => {
-      login(username, password);
-      setIsSubmitting(false);
-    }, 350);
+      const res = login(username, password);
+      if (!res.success) {
+        setErrorMsg('Invalid login credentials. Please use the credentials provided in the helper box.');
+        setIsSubmitting(false);
+      }
+    }, 200);
   };
 
-  const handleFillDemo = () => {
+  const fillStudent = () => {
     setUsername('student');
     setPassword('cloudsec123');
+    setErrorMsg('');
+  };
+
+  const fillAdmin = () => {
+    setUsername('admin');
+    setPassword('admin@cdac');
+    setErrorMsg('');
   };
 
   return (
@@ -36,33 +49,7 @@ export const LoginPage = () => {
         position: 'relative'
       }}
     >
-      {/* Background Decorative Cloud Animation */}
-      <div
-        className="animate-gentle-bob"
-        style={{
-          position: 'absolute',
-          top: '8%',
-          opacity: 0.45,
-          pointerEvents: 'none'
-        }}
-      >
-        <svg width="220" height="110" viewBox="0 0 220 110" fill="none">
-          <path
-            d="M 50 85 C 20 85 10 65 20 45 C 15 25 35 15 55 22 C 70 8 115 8 135 25 C 155 20 180 35 175 60 C 190 75 170 90 145 85 Z"
-            fill="#e0f2fe"
-            stroke="#bae6fd"
-            strokeWidth="2"
-          />
-          <path
-            d="M 120 45 Q 140 30 160 50"
-            stroke="#0284c7"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
-
-      {/* Main Login Card */}
+      {/* Centered Login Card */}
       <div
         className="animate-pop-in"
         style={{
@@ -73,182 +60,147 @@ export const LoginPage = () => {
           border: '1px solid #e2e8f0',
           boxShadow: '0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04)',
           padding: '36px 32px',
-          position: 'relative',
-          zIndex: 10
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '24px'
         }}
       >
         {/* Brand Header */}
-        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+        <div style={{ textAlign: 'center' }}>
           <div
             style={{
-              width: '52px',
-              height: '52px',
-              borderRadius: '14px',
-              backgroundColor: '#0284c7',
-              color: '#ffffff',
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '0 auto 16px auto',
-              boxShadow: '0 4px 6px -1px rgba(2, 132, 199, 0.3)'
-            }}
-          >
-            <Shield size={28} />
-          </div>
-
-          <span
-            style={{
-              fontSize: '11px',
-              fontWeight: '700',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
+              gap: '6px',
+              fontFamily: "'JetBrains Mono', 'IBM Plex Sans', monospace",
+              fontSize: '28px',
+              fontWeight: '900',
               color: '#0284c7',
-              backgroundColor: '#f0f9ff',
-              padding: '3px 10px',
-              borderRadius: '12px',
-              border: '1px solid #bae6fd'
+              letterSpacing: '-0.03em',
+              marginBottom: '4px'
             }}
           >
-            CloudSec Academy
-          </span>
-
-          <h1
-            style={{
-              fontSize: '24px',
-              fontWeight: '800',
-              color: '#0f172a',
-              marginTop: '10px',
-              marginBottom: '6px',
-              letterSpacing: '-0.02em'
-            }}
-          >
-            Cloud Sec Course
-          </h1>
-          <p style={{ fontSize: '13.5px', color: '#64748b' }}>
-            Sign in to access your hands-on training cloud
-          </p>
+            <span>CDAC</span>
+            {/* Small cloud icon in accent colour */}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0284c7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+            </svg>
+          </div>
+          <div style={{ fontSize: '13.5px', color: '#475569', fontWeight: '600' }}>
+            Cloud Security Training Program
+          </div>
         </div>
 
-        {/* Demo Access Helper Box */}
+        {/* Helper Box with Demo Logins */}
         <div
           style={{
-            backgroundColor: '#f0fdf4',
-            border: '1px solid #bbf7d0',
+            backgroundColor: '#f8fafc',
+            border: '1px solid #cbd5e1',
             borderRadius: '10px',
-            padding: '12px 14px',
-            marginBottom: '22px',
-            fontSize: '12.5px',
-            color: '#166534',
+            padding: '14px 16px',
+            fontSize: '11.5px',
+            color: '#334155',
+            fontFamily: 'monospace',
             display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
+            flexDirection: 'column',
             gap: '8px'
           }}
         >
-          <div>
-            <div style={{ fontWeight: '700', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <CheckCircle2 size={14} color="#16a34a" />
-              <span>Demo Access Credentials</span>
-            </div>
-            <div style={{ color: '#15803d', fontSize: '12px' }}>
-              Username: <code style={{ fontWeight: '700', backgroundColor: '#dcfce7', padding: '1px 5px', borderRadius: '4px' }}>student</code> / Password: <code style={{ fontWeight: '700', backgroundColor: '#dcfce7', padding: '1px 5px', borderRadius: '4px' }}>cloudsec123</code>
-            </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>Student Access — Username: <strong>student</strong> Password: <strong>cloudsec123</strong></span>
+            <button
+              type="button"
+              onClick={fillStudent}
+              style={{
+                fontSize: '10.5px',
+                padding: '2px 8px',
+                borderRadius: '4px',
+                backgroundColor: '#e0f2fe',
+                color: '#0369a1',
+                fontWeight: '700',
+                cursor: 'pointer'
+              }}
+            >
+              Fill
+            </button>
           </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed #cbd5e1', paddingTop: '6px' }}>
+            <span>Admin Access   — Username: <strong>admin</strong> Password: <strong>admin@cdac</strong></span>
+            <button
+              type="button"
+              onClick={fillAdmin}
+              style={{
+                fontSize: '10.5px',
+                padding: '2px 8px',
+                borderRadius: '4px',
+                backgroundColor: '#fee2e2',
+                color: '#991b1b',
+                fontWeight: '700',
+                cursor: 'pointer'
+              }}
+            >
+              Fill
+            </button>
+          </div>
+        </div>
 
-          <button
-            type="button"
-            onClick={handleFillDemo}
+        {errorMsg && (
+          <div
             style={{
-              fontSize: '11px',
-              fontWeight: '700',
-              color: '#15803d',
-              backgroundColor: '#dcfce7',
-              padding: '3px 8px',
-              borderRadius: '6px',
-              border: '1px solid #86efac',
-              whiteSpace: 'nowrap'
+              backgroundColor: '#fee2e2',
+              border: '1px solid #fecaca',
+              borderRadius: '8px',
+              padding: '10px 14px',
+              color: '#991b1b',
+              fontSize: '12px',
+              fontWeight: '600'
             }}
           >
-            Auto-fill
-          </button>
-        </div>
+            {errorMsg}
+          </div>
+        )}
 
         {/* Login Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label
-              style={{
-                display: 'block',
-                fontSize: '13px',
-                fontWeight: '600',
-                color: '#334155',
-                marginBottom: '6px'
-              }}
-            >
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
               Username
             </label>
-            <div style={{ position: 'relative' }}>
-              <div style={{ position: 'absolute', left: '12px', top: '12px', color: '#94a3b8' }}>
-                <User size={16} />
-              </div>
-              <input
-                type="text"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter username"
-                style={{
-                  width: '100%',
-                  padding: '10px 12px 10px 38px',
-                  borderRadius: '10px',
-                  border: '1px solid #cbd5e1',
-                  fontSize: '14px',
-                  color: '#0f172a',
-                  outline: 'none',
-                  transition: 'border-color 0.15s ease'
-                }}
-                onFocus={(e) => (e.target.style.borderColor = '#0284c7')}
-                onBlur={(e) => (e.target.style.borderColor = '#cbd5e1')}
-              />
-            </div>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required={true}
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                border: '1px solid #cbd5e1',
+                fontSize: '13.5px',
+                color: '#0f172a'
+              }}
+            />
           </div>
 
           <div>
-            <label
-              style={{
-                display: 'block',
-                fontSize: '13px',
-                fontWeight: '600',
-                color: '#334155',
-                marginBottom: '6px'
-              }}
-            >
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
               Password
             </label>
-            <div style={{ position: 'relative' }}>
-              <div style={{ position: 'absolute', left: '12px', top: '12px', color: '#94a3b8' }}>
-                <Lock size={16} />
-              </div>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-                style={{
-                  width: '100%',
-                  padding: '10px 12px 10px 38px',
-                  borderRadius: '10px',
-                  border: '1px solid #cbd5e1',
-                  fontSize: '14px',
-                  color: '#0f172a',
-                  outline: 'none',
-                  transition: 'border-color 0.15s ease'
-                }}
-                onFocus={(e) => (e.target.style.borderColor = '#0284c7')}
-                onBlur={(e) => (e.target.style.borderColor = '#cbd5e1')}
-              />
-            </div>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required={true}
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                border: '1px solid #cbd5e1',
+                fontSize: '13.5px',
+                color: '#0f172a'
+              }}
+            />
           </div>
 
           <button
@@ -256,31 +208,25 @@ export const LoginPage = () => {
             disabled={isSubmitting}
             style={{
               marginTop: '8px',
+              padding: '12px',
               backgroundColor: '#0284c7',
               color: '#ffffff',
-              padding: '12px',
-              borderRadius: '10px',
+              borderRadius: '8px',
               fontSize: '14px',
               fontWeight: '700',
+              border: 'none',
+              cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              boxShadow: '0 4px 6px -1px rgba(2, 132, 199, 0.3)',
-              transition: 'all 0.2s ease',
-              cursor: isSubmitting ? 'wait' : 'pointer'
+              boxShadow: '0 4px 6px -1px rgba(2, 132, 199, 0.25)'
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#0369a1')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#0284c7')}
           >
-            <span>{isSubmitting ? 'Signing In...' : 'Sign In to Dashboard'}</span>
+            <span>Sign In</span>
             <ArrowRight size={16} />
           </button>
         </form>
-
-        <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '11.5px', color: '#94a3b8' }}>
-          Vendor-Neutral Hands-On Cloud Security Training Platform
-        </div>
       </div>
     </div>
   );

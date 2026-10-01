@@ -65,7 +65,7 @@ export const InternDeskScene = ({ isReplaying }) => {
         {/* Intern Stick Figure */}
         <g
           style={{
-            transform: step === 0 ? 'translateX(100px)' : 'translateX(165px)',
+            transform: step === 0 ? 'translateX(100px)' : 'translateX(175px)',
             transition: 'transform 0.8s cubic-bezier(0.34, 1.2, 0.64, 1)'
           }}
         >
@@ -86,8 +86,9 @@ export const InternDeskScene = ({ isReplaying }) => {
             </>
           ) : (
             <>
-              {/* Typing at laptop */}
-              <path d="M28 108 L48 120 L62 126" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+              {/* Typing at laptop - reach keyboard at x=260-294 */}
+              <path d="M28 108 L55 120 L86 127" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+              <path d="M28 108 L58 115 L96 127" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
             </>
           )}
 
@@ -115,32 +116,32 @@ export const InternDeskScene = ({ isReplaying }) => {
         {step >= 3 && (
           <g style={{ opacity: 1, animation: 'popFadeIn 0.5s ease-out' }}>
             {/* Priya Head */}
-            <circle cx="410" cy="80" r="14" fill="#ffffff" stroke="#0f172a" strokeWidth="2.5" />
+            <circle cx="425" cy="85" r="14" fill="#ffffff" stroke="#0f172a" strokeWidth="2.5" />
             {/* Priya hair bun */}
-            <circle cx="410" cy="64" r="5" fill="#334155" />
+            <circle cx="425" cy="69" r="5" fill="#334155" />
             {/* Priya Torso */}
-            <line x1="410" y1="94" x2="410" y2="145" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1="425" y1="99" x2="425" y2="148" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
             {/* Gesture arm pointing towards desk */}
-            <path d="M410 106 L385 116 L365 112" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-            <line x1="410" y1="106" x2="425" y2="135" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
+            <path d="M425 111 L395 120 L370 118" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            <line x1="425" y1="111" x2="440" y2="138" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
             {/* Legs */}
-            <line x1="410" y1="145" x2="400" y2="185" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-            <line x1="410" y1="145" x2="420" y2="185" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-            {/* Label */}
-            <text x="410" y="55" textAnchor="middle" fontSize="11" fontWeight="700" fill="#0369a1">
+            <line x1="425" y1="148" x2="415" y2="185" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1="425" y1="148" x2="435" y2="185" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
+            {/* Label below floor to prevent collision */}
+            <text x="425" y="202" textAnchor="middle" fontSize="11" fontWeight="700" fill="#0369a1">
               Priya (Manager)
             </text>
 
             {/* Speech Bubble */}
-            <g style={{ animation: 'popoverDown 0.3s ease-out' }}>
-              <rect x="300" y="8" width="190" height="42" rx="8" fill="#ffffff" stroke="#0284c7" strokeWidth="1.5" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))" />
-              <polygon points="390,50 405,50 395,58" fill="#ffffff" stroke="#0284c7" strokeWidth="1.5" />
-              <line x1="391" y1="50" x2="404" y2="50" stroke="#ffffff" strokeWidth="2.5" />
-              <text x="395" y="24" textAnchor="middle" fontSize="10.5" fontWeight="600" fill="#0f172a">
-                "Welcome aboard! Spin up your
+            <g style={{ animation: 'popoverDown 0.3s ease-out', transformBox: 'fill-box', transformOrigin: 'bottom center' }}>
+              <rect x="275" y="12" width="200" height="42" rx="8" fill="#ffffff" stroke="#0284c7" strokeWidth="1.5" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))" />
+              <polygon points="415,54 430,54 422,62" fill="#ffffff" stroke="#0284c7" strokeWidth="1.5" />
+              <line x1="416" y1="54" x2="429" y2="54" stroke="#ffffff" strokeWidth="2.5" />
+              <text x="375" y="28" textAnchor="middle" fontSize="10.5" fontWeight="600" fill="#0f172a">
+                "Welcome to the Cloud! Let's
               </text>
-              <text x="395" y="38" textAnchor="middle" fontSize="10.5" fontWeight="600" fill="#0284c7">
-                first cloud VM today."
+              <text x="375" y="42" textAnchor="middle" fontSize="10.5" fontWeight="600" fill="#0284c7">
+                build your first environment."
               </text>
             </g>
           </g>

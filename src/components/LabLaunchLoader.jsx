@@ -1,79 +1,149 @@
 import React, { useState, useEffect } from 'react';
+import { Character } from './SceneAnimation';
 
-export const LabLaunchLoader = ({ onComplete }) => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [progress, setProgress] = useState(15);
+export const LabLaunchLoader = ({
+  mode = 'initial', // 'initial' | 'resume' | 'time_skip'
+  onComplete
+}) => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [bootingDesktop, setBootingDesktop] = useState(false);
+  const [fallbackMessage, setFallbackMessage] = useState(null);
 
-  const steps = [
-    {
-      step: 1,
-      title: 'Waking up your training cloud...',
-      description: 'Provisioning isolated cloud tenant container'
-    },
-    {
-      step: 2,
-      title: 'Packing your virtual machine...',
-      description: 'Allocating compute cores, RAM, and base operating image'
-    },
-    {
-      step: 3,
-      title: 'Setting up your network...',
-      description: 'Assigning software-defined VPC and security group rules'
-    },
-    {
-      step: 4,
-      title: 'Almost there...',
-      description: 'Establishing secure browser tunnel to lab console'
-    },
-    {
-      step: 5,
-      title: 'Your lab is ready! 🎉',
-      description: 'Redirecting to your active Nimbus training environment...'
-    }
+  const initialSteps = [
+    'Starting your Kali workstation…',
+    "Connecting to QuickMart's training cloud…",
+    'Horizon is reachable…',
+    'Your workstation is ready'
   ];
 
   useEffect(() => {
-    // Timing progression: ~5.2s total
-    const timer1 = setTimeout(() => {
-      setCurrentStep(2);
-      setProgress(40);
-    }, 1100);
+    // 8-second absolute safety fallback
+    const safetyTimer = setTimeout(() => {
+      setFallbackMessage('Taking longer than expected, entering lab now...');
+      setTimeout(() => {
+        if (onComplete) onComplete();
+      }, 700);
+    }, 8000);
 
-    const timer2 = setTimeout(() => {
-      setCurrentStep(3);
-      setProgress(68);
-    }, 2300);
+    if (mode === 'resume') {
+      const resumeTimer = setTimeout(() => {
+        if (onComplete) onComplete();
+      }, 2000);
+      return () => {
+        clearTimeout(resumeTimer);
+        clearTimeout(safetyTimer);
+      };
+    }
 
-    const timer3 = setTimeout(() => {
-      setCurrentStep(4);
-      setProgress(88);
-    }, 3600);
+    if (mode === 'time_skip') {
+      const timeSkipTimer = setTimeout(() => {
+        if (onComplete) onComplete();
+      }, 2400);
+      return () => {
+        clearTimeout(timeSkipTimer);
+        clearTimeout(safetyTimer);
+      };
+    }
 
-    const timer4 = setTimeout(() => {
-      setCurrentStep(5);
-      setProgress(100);
-    }, 4600);
-
-    const timer5 = setTimeout(() => {
+    // Mode is 'initial': 4-6s sequence + 2s boot
+    const t0 = setTimeout(() => setCurrentStep(1), 1200);
+    const t1 = setTimeout(() => setCurrentStep(2), 2400);
+    const t2 = setTimeout(() => setCurrentStep(3), 3600);
+    const t3 = setTimeout(() => setBootingDesktop(true), 4600);
+    const t4 = setTimeout(() => {
       if (onComplete) onComplete();
-    }, 5600);
+    }, 6600);
 
     return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-      clearTimeout(timer4);
-      clearTimeout(timer5);
+      clearTimeout(t0);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+      clearTimeout(safetyTimer);
     };
-  }, [onComplete]);
+  }, [mode, onComplete]);
 
+  // Mode: time_skip (Next morning, 9:12 AM title card)
+  if (mode === 'time_skip') {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: '#0f172a',
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#ffffff'
+        }}
+      >
+        <div style={{ textAlign: 'center' }} className="animate-pop-in">
+          <div style={{ fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#94a3b8', marginBottom: '8px' }}>
+            QuickMart Incident Timeline
+          </div>
+          <h1 style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '-0.02em', color: '#ffffff', marginBottom: '12px' }}>
+            Next morning, 9:12 AM
+          </h1>
+          <p style={{ fontSize: '14px', color: '#cbd5e1', maxWidth: '440px', margin: '0 auto' }}>
+            Anomalous overnight role changes detected. The audit scanner has flagged the project.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Mode: resume
+  if (mode === 'resume') {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.65)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '16px',
+            padding: '32px 40px',
+            textAlign: 'center',
+            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '16px'
+          }}
+          className="animate-pop-in"
+        >
+          <div style={{ width: '40px', height: '40px', border: '3px solid #e0f2fe', borderTopColor: '#0284c7', borderRadius: '50%' }} className="animate-spin" />
+          <div>
+            <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#0f172a', marginBottom: '4px' }}>
+              Resuming your workstation…
+            </h3>
+            <p style={{ fontSize: '12.5px', color: '#64748b', margin: 0 }}>
+              Restoring Firefox tabs, session credentials, and cloud state.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Mode: initial
   return (
     <div
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.45)',
-        backdropFilter: 'blur(6px)',
+        backgroundColor: 'rgba(15, 23, 42, 0.75)',
         zIndex: 9999,
         display: 'flex',
         alignItems: 'center',
@@ -82,245 +152,74 @@ export const LabLaunchLoader = ({ onComplete }) => {
       }}
     >
       <div
-        className="animate-pop-in"
         style={{
-          background: '#ffffff',
-          borderRadius: '16px',
+          backgroundColor: '#ffffff',
+          borderRadius: '18px',
           width: '100%',
-          maxWidth: '540px',
-          padding: '32px 28px',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-          border: '1px solid #e2e8f0',
-          textAlign: 'center'
+          maxWidth: '480px',
+          padding: '32px',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.3)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          gap: '20px'
         }}
+        className="animate-pop-in"
       >
-        {/* Animated Stick-Figure & Cloud Canvas */}
-        <div
-          style={{
-            height: '190px',
-            width: '100%',
-            background: '#f8fafc',
-            borderRadius: '12px',
-            border: '1px solid #f1f5f9',
-            marginBottom: '24px',
-            overflow: 'hidden',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <svg viewBox="0 0 460 190" style={{ width: '100%', height: '100%' }}>
-            {/* Ground Line */}
-            <line x1="30" y1="160" x2="430" y2="160" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" />
+        {fallbackMessage ? (
+          <div style={{ color: '#d97706', fontSize: '13px', fontWeight: '700' }}>
+            {fallbackMessage}
+          </div>
+        ) : bootingDesktop ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+            <div style={{ width: '48px', height: '48px', backgroundColor: '#0f172a', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: '#38bdf8', fontWeight: '900', fontSize: '16px' }}>KALI</span>
+            </div>
+            <div>
+              <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#0f172a', marginBottom: '4px' }}>
+                Booting Kali Desktop…
+              </h3>
+              <p style={{ fontSize: '12px', color: '#64748b' }}>
+                Initializing display server and opening browser workstation.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', width: '100%' }}>
+            {/* Stick figure character animation area */}
+            <div style={{ width: '120px', height: '90px' }}>
+              <svg viewBox="0 0 100 80" style={{ width: '100%', height: '100%' }}>
+                <Character type="trainee" x={50} y={20} scale={1} />
+              </svg>
+            </div>
 
-            {/* Cloud Outline in the Center / Right */}
-            <g transform="translate(190, 20)">
-              {/* Cloud drawing in */}
-              <path
-                d="M 60 110 C 25 110 10 90 20 65 C 10 40 40 20 65 30 C 85 10 135 10 155 35 C 180 30 205 50 195 80 C 210 105 180 120 155 110 Z"
-                fill={currentStep >= 5 ? '#e0f2fe' : '#ffffff'}
-                stroke={currentStep >= 5 ? '#0284c7' : '#0284c7'}
-                strokeWidth={currentStep >= 1 ? '3' : '1'}
-                strokeDasharray={currentStep === 1 ? '350' : 'none'}
-                strokeDashoffset={currentStep === 1 ? '100' : '0'}
-                className={currentStep >= 5 ? 'animate-glow' : ''}
-                style={{
-                  transition: 'all 0.6s cubic-bezier(0.34, 1.2, 0.64, 1)'
-                }}
-              />
+            <div>
+              <div style={{ fontSize: '11px', textTransform: 'uppercase', color: '#0284c7', fontWeight: '800', letterSpacing: '0.04em', marginBottom: '4px' }}>
+                QuickMart Training Cloud
+              </div>
+              <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#0f172a', marginBottom: '6px' }}>
+                {initialSteps[currentStep]}
+              </h3>
+            </div>
 
-              {/* Step 2 & above: Virtual Machine box inside the cloud */}
-              {currentStep >= 2 && (
-                <g
+            {/* Step Indicators */}
+            <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+              {initialSteps.map((_, idx) => (
+                <div
+                  key={idx}
                   style={{
-                    transform: currentStep >= 2 ? 'translate(65px, 45px)' : 'translate(0px, 45px)',
-                    transition: 'transform 0.7s cubic-bezier(0.34, 1.2, 0.64, 1)'
+                    width: idx === currentStep ? '24px' : '8px',
+                    height: '6px',
+                    borderRadius: '3px',
+                    backgroundColor: idx <= currentStep ? '#0284c7' : '#e2e8f0',
+                    transition: 'all 300ms ease'
                   }}
-                >
-                  <rect x="0" y="0" width="70" height="42" rx="6" fill="#1e293b" />
-                  <rect x="8" y="8" width="54" height="26" rx="3" fill="#0f172a" />
-                  <circle cx="16" cy="16" r="2.5" fill="#10b981" className="animate-pulse-green" />
-                  <circle cx="24" cy="16" r="2.5" fill="#38bdf8" />
-                  <text x="35" y="27" fontSize="8" fontFamily="JetBrains Mono" fill="#38bdf8">
-                    VM-01
-                  </text>
-                </g>
-              )}
-
-              {/* Step 3 & above: Network lines wrapping around cloud */}
-              {currentStep >= 3 && (
-                <g style={{ animation: 'popFadeIn 0.4s ease' }}>
-                  <circle cx="25" cy="50" r="5" fill="#0284c7" />
-                  <circle cx="180" cy="40" r="5" fill="#0284c7" />
-                  <circle cx="110" cy="120" r="5" fill="#0284c7" />
-                  <path
-                    d="M 25 50 Q 80 5 180 40 Q 190 90 110 120"
-                    fill="none"
-                    stroke="#38bdf8"
-                    strokeWidth="2"
-                    strokeDasharray="4 4"
-                  />
-                </g>
-              )}
-
-              {/* Step 5: Large checkmark badge appearing on cloud */}
-              {currentStep >= 5 && (
-                <g transform="translate(100, 65)" style={{ animation: 'popFadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
-                  <circle cx="0" cy="0" r="22" fill="#10b981" />
-                  <path d="M -8 -1 L -2 6 L 10 -6" fill="none" stroke="#ffffff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
-                </g>
-              )}
-            </g>
-
-            {/* Stick Figure Intern Character */}
-            <g
-              transform="translate(100, 50)"
-              style={{
-                transition: 'all 0.5s ease'
-              }}
-            >
-              {/* Head */}
-              <circle cx="20" cy="20" r="14" fill="#ffffff" stroke="#0f172a" strokeWidth="2.5" />
-              {/* Torso */}
-              <line x1="20" y1="34" x2="20" y2="80" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-
-              {/* Arms based on step */}
-              {currentStep === 1 && (
-                <>
-                  {/* Looking at cloud curiously */}
-                  <line x1="20" y1="45" x2="40" y2="35" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-                  <line x1="20" y1="45" x2="5" y2="60" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-                </>
-              )}
-
-              {currentStep === 2 && (
-                <>
-                  {/* Pushing the VM into the cloud */}
-                  <path d="M20 45 L42 42 L65 48" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-                  <line x1="20" y1="45" x2="38" y2="58" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-                </>
-              )}
-
-              {currentStep === 3 && (
-                <>
-                  {/* Connecting network cables */}
-                  <path d="M20 45 L45 32 L60 25" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-                  <line x1="20" y1="45" x2="10" y2="65" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-                </>
-              )}
-
-              {currentStep === 4 && (
-                <>
-                  {/* Checking wrist / watch impatiently */}
-                  <path d="M20 45 L32 55 L26 40" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-                  <rect x="23" y="38" width="6" height="5" rx="1" fill="#0284c7" />
-                  <line x1="20" y1="45" x2="5" y2="60" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-                </>
-              )}
-
-              {currentStep >= 5 && (
-                <>
-                  {/* Fist pump / Thumbs up victory! */}
-                  <path d="M20 45 L40 28 L45 12" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" fill="none" />
-                  <circle cx="45" cy="10" r="4" fill="#0284c7" />
-                  <path d="M20 45 L5 55 L0 68" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-                </>
-              )}
-
-              {/* Legs */}
-              {currentStep === 4 ? (
-                <>
-                  {/* Tapping foot */}
-                  <line x1="20" y1="80" x2="10" y2="110" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-                  <line
-                    x1="20"
-                    y1="80"
-                    x2="30"
-                    y2="110"
-                    stroke="#0f172a"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    style={{ animation: 'footTap 0.6s ease-in-out infinite' }}
-                  />
-                </>
-              ) : currentStep >= 5 ? (
-                <>
-                  {/* Victory jump */}
-                  <line x1="20" y1="80" x2="8" y2="105" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-                  <line x1="20" y1="80" x2="32" y2="105" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-                </>
-              ) : (
-                <>
-                  <line x1="20" y1="80" x2="10" y2="110" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-                  <line x1="20" y1="80" x2="30" y2="110" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
-                </>
-              )}
-            </g>
-          </svg>
-        </div>
-
-        {/* Dynamic Title & Subtitle */}
-        <div style={{ minHeight: '64px', marginBottom: '20px' }}>
-          <h3
-            key={currentStep}
-            className="animate-pop-in"
-            style={{
-              fontSize: '18px',
-              fontWeight: '700',
-              color: currentStep >= 5 ? '#059669' : '#0f172a',
-              marginBottom: '6px'
-            }}
-          >
-            {steps[currentStep - 1].title}
-          </h3>
-          <p
-            key={`desc-${currentStep}`}
-            className="animate-slide-in"
-            style={{
-              fontSize: '13px',
-              color: '#64748b'
-            }}
-          >
-            {steps[currentStep - 1].description}
-          </p>
-        </div>
-
-        {/* Progress Bar Container */}
-        <div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              fontSize: '12px',
-              fontWeight: '600',
-              color: '#64748b',
-              marginBottom: '8px'
-            }}
-          >
-            <span>Step {currentStep} of 5</span>
-            <span>{progress}%</span>
+                />
+              ))}
+            </div>
           </div>
-
-          <div
-            style={{
-              width: '100%',
-              height: '8px',
-              backgroundColor: '#e2e8f0',
-              borderRadius: '9999px',
-              overflow: 'hidden'
-            }}
-          >
-            <div
-              style={{
-                width: `${progress}%`,
-                height: '100%',
-                backgroundColor: currentStep >= 5 ? '#10b981' : '#0284c7',
-                borderRadius: '9999px',
-                transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s ease'
-              }}
-            />
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
