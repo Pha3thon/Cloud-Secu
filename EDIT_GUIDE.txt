@@ -1,0 +1,246 @@
+CDAC CLOUD SECURITY TRAINING PLATFORM — EDIT GUIDE
+Last updated: October 2026 (Revision 11)
+
+HOW TO USE: find what you want to change in the left column, open the file(s) on the right.
+
+────────────────────────────────────────────────────────────────
+1. BRANDING, COLORS, FONTS
+────────────────────────────────────────────────────────────────
+Logo wordmark text                → src/components/layout/TopBar.jsx
+Colors, spacing, radii, shadows   → src/styles/tokens.css
+Global fonts and resets           → src/index.css
+Favicon                           → public/favicon.svg
+
+────────────────────────────────────────────────────────────────
+2. LOGIN AND ACCOUNTS
+────────────────────────────────────────────────────────────────
+Login screen UI                   → src/routes/Login.jsx
+Demo credentials and auth logic   → src/state/authSlice.js
+Logout button                     → src/components/layout/UserMenu.jsx
+
+────────────────────────────────────────────────────────────────
+3. DASHBOARD AND CURRICULUM
+────────────────────────────────────────────────────────────────
+Dashboard copy (title, outcomes)  → src/content/copy.js
+Dashboard layout                  → src/routes/Dashboard.jsx
+Dashboard phase timeline          → src/components/common/PhaseTimeline.jsx
+Dashboard outcomes list           → src/components/common/OutcomesList.jsx
+Module list, hours, descriptions  → src/content/modules.js
+Curriculum page layout            → src/routes/Curriculum.jsx
+Module unlock rules               → src/state/progressSlice.js
+
+────────────────────────────────────────────────────────────────
+4. MODULE 0, MODULE 1 & MODULE 4 CONTENT (slides and labs)
+────────────────────────────────────────────────────────────────
+Module 0 content                  → src/content/m0/
+Module 1 index & topics           → src/content/m1/index.js, topic1.js … topic6.js
+Module 1 Labs (Lab 1, 2, 3)       → src/labs/m1Lab1.js, m1Lab2.js, m1Lab3.js
+Wireshark packet analyzer (M1L2)  → src/simulations/kali/Wireshark.jsx
+NVD CVE/CVSS Browser (M1L3)       → src/simulations/kali/NvdBrowser.jsx
+Ungraded Concept Check-in (M1)    → src/components/slides/QuizCheck.jsx
+Slide formats (std/eli5/official) → src/components/slides/TheorySlide.jsx
+Slide TTS speech synthesis hook   → src/hooks/useReadableSlideText.js
+M4 Topic 1 slides + Lab 1         → src/content/m4/topic1.js
+M4 Topic 2 … Topic 7              → src/content/m4/topic2.js … topic7.js
+Lab Credentials card              → src/content/labCredentials.js
+Lab 7 personas and target roles   → src/content/personas.js
+
+────────────────────────────────────────────────────────────────
+5. LAB VALIDATION (Check My Configuration + answers)
+────────────────────────────────────────────────────────────────
+Centralized live validation hook  → src/hooks/useLabCheck.js
+Input sanitization utility        → src/utils/sanitize.js
+Lab registry (ids, order, next)   → src/labs/registry.js
+M1 lab check functions            → src/labs/m1Lab1.js, m1Lab2.js, m1Lab3.js
+M4 lab check functions            → src/labs/lab1.js … lab7.js
+Answer matching rules             → src/labs/answerMatch.js
+
+────────────────────────────────────────────────────────────────
+6. SIMULATED HORIZON & FORM SAFETY
+────────────────────────────────────────────────────────────────
+Input sanitization utility        → src/utils/sanitize.js
+Crash containment error boundary  → src/components/common/SimErrorBoundary.jsx
+Horizon shell and routing         → src/simulations/horizon/Horizon.jsx
+A specific panel (e.g. Networks)  → src/simulations/horizon/panels/Networks.jsx
+A wizard (e.g. Launch Instance)   → src/simulations/horizon/wizards/LaunchInstance.jsx
+Role-based policy (403 rules)     → src/simulations/horizon/policy.js
+Simulated cloud state (resources) → src/state/simSlice.js
+
+────────────────────────────────────────────────────────────────
+7. SIMULATED KALI WORKSTATION & TERMINAL
+────────────────────────────────────────────────────────────────
+Kali desktop shell                → src/simulations/kali/KaliDesktop.jsx
+Firefox tabs                      → src/simulations/kali/Firefox.jsx
+Files app (Downloads/Documents)   → src/simulations/kali/Files.jsx
+Simulated Linux Terminal          → src/simulations/terminal/SimulatedTerminal.jsx
+Terminal commands & engine        → src/simulations/terminal/commandEngine.js, commandWhitelist.js
+Virtual filesystem (VFS per lab)  → src/simulations/terminal/virtualFilesystem.js
+URL → response rules              → src/simulations/kali/urlRouter.js
+Kali session state                → src/state/kaliSlice.js
+
+────────────────────────────────────────────────────────────────
+8. ACCESS REQUEST PORTAL (Lab 7)
+────────────────────────────────────────────────────────────────
+Portal UI                         → src/simulations/accessPortal/AccessPortal.jsx
+Approve/return rules              → src/simulations/accessPortal/requestRules.js
+
+────────────────────────────────────────────────────────────────
+9. SIDEBAR, LOCKING, NAVIGATION & HOST SAFETY
+────────────────────────────────────────────────────────────────
+Outline sidebar                   → src/components/sidebar/OutlineSidebar.jsx
+Furthest-reached + completion     → src/state/progressSlice.js
+Completion actions                → src/state/actions.js (COMPLETE_M0_MODULE, COMPLETE_M1_MODULE, COMPLETE_LAB, etc.)
+Scoped lab session safety guard   → src/components/lab/LabSessionGuard.jsx (active only when lab is running)
+⚠️ Host Safety Guard hook          → src/hooks/useHostSafetyGuard.js
+
+────────────────────────────────────────────────────────────────
+10. SCENE ANIMATIONS (one per slide)
+────────────────────────────────────────────────────────────────
+Scene loop/animation system       → src/hooks/useSceneLoop.js, src/components/scenes/
+Scene renderer                    → src/components/scenes/SceneAnimation.jsx
+Shared SVG parts                  → src/components/scenes/parts/
+A specific scene                  → src/components/scenes/scenes/<scene-id>.jsx
+
+────────────────────────────────────────────────────────────────
+11. RESET BEHAVIOUR
+────────────────────────────────────────────────────────────────
+Reset Lab (atomic)                → src/state/actions.js → RESET_LAB
+Reset Course                      → src/state/actions.js → RESET_COURSE
+Lab snapshots (per-lab initial)   → src/state/labSlice.js
+
+────────────────────────────────────────────────────────────────
+12. ADMIN EDITOR
+────────────────────────────────────────────────────────────────
+Editor shell + routing            → src/routes/AdminEditor.jsx
+Canvas (WYSIWYG)                  → src/components/admin/EditorCanvas.jsx
+Properties panel                  → src/components/admin/PropertiesPanel.jsx
+Slide/topic tree                  → src/components/admin/SidebarTree.jsx
+Lab editor                        → src/components/admin/LabEditor.jsx
+Admin edits storage               → src/state/adminSlice.js
+
+────────────────────────────────────────────────────────────────
+13. PERSISTENCE AND STORAGE
+────────────────────────────────────────────────────────────────
+localStorage read/write wrappers  → src/utils/storage.js
+Store wiring and hydration        → src/state/store.js
+
+────────────────────────────────────────────────────────────────
+14. HOSTING AND BUILD
+────────────────────────────────────────────────────────────────
+Dev server / build config         → vite.config.js
+Path aliases (@/...)              → vite.config.js + jsconfig.json
+Entry HTML                        → index.html
+Install and run                   → README.md
+
+────────────────────────────────────────────────────────────────
+15. BACKEND INTEGRATION POINTS (search for these TODOs)
+────────────────────────────────────────────────────────────────
+Auth                              → grep "// TODO: connect real backend"
+Real Kali VM stream               → grep "// TODO: replace simulated Kali"
+Real Horizon                      → grep "// TODO: replace simulated Horizon"
+Real lab validation               → grep "// TODO: replace with real lab validation API"
+Real CMS                          → grep "// TODO: replace with real CMS API"
+Real progress API                 → grep "// TODO: replace with real backend progress API"
+
+────────────────────────────────────────────────────────────────
+16. STANDING CONTENT RULES
+────────────────────────────────────────────────────────────────
+- Three Slide Formats:
+  • 'standard': Default theory presentation with title, body, optional scene animation, and optional reference.
+  • 'eli5': "Explain Like I'm 5" (tagged "In Simple Words"). 2–3 short sentences max. Zero jargon. Concrete everyday
+    child-friendly analogy (toys, home, family, food, school — no abstract corporate analogies). Pure plain language only
+    (no citations or 📚 references). Retains scene animation.
+  • 'official-definition': Formal standards definition (tagged "Official Definition"). Contains ONLY the formal definition
+    from the originating standard or standards body (e.g. NIST, RFC, ISO, IANA, MITRE, FIRST.org). No repetition of
+    analogies or re-explanations. Deliberately dry and precise.
+    Must include:
+      - standardName: Standards body and identifier (e.g. "NIST SP 800-125", "RFC 1918")
+      - standardFullTitle: Official title of the publication
+      - definitionText: The quoted or closely paraphrased standard text
+      - sourceUrl: Real, clickable public URL (rendered prominently as an external link chip: "View source: [Name] ↗")
+      - bridgeLine: Exactly one line bridging back to Slide 1's ELI5 analogy
+      - sceneId: null (no scene animation on official definition slides)
+  • Text-to-Speech (TTS): Handled via src/hooks/useReadableSlideText.js. Reads ELI5 plain language directly; on official
+    definition slides, reads definition + standard name and cleanly substitutes "source link available on screen" instead
+    of reading the raw URL string aloud.
+- ELI5 → Official Definition Pairing (Revision 11):
+  All 16 core foundational terms across M1 must be presented as a strict two-slide pair:
+  1. Slide 1 (eli5): Child-simple everyday analogy.
+  2. Slide 2 (official-definition): Formal standard definition + clickable sourceUrl + bridgeLine.
+- Example Personas & Names Convention:
+  Example personas/names in analogies and scenarios: Indian names or Indian-film references only,
+  varied across a module, never clustered from one film, never Western placeholder names (John/Alice/Bob).
+- Natural-Value Answers:
+  Lab flags use natural values produced by standard commands/tools (IPs, hashes, modes, flags),
+  not artificial multiple-choice letters or dummy strings.
+- Honest Referencing:
+  Real public standards only (NIST, RFC, ISO, MITRE, FIRST) — verified working URLs, no invented document numbers.
+
+────────────────────────────────────────────────────────────────
+17. ACCESSIBILITY & DISPLAY (Revision 10)
+────────────────────────────────────────────────────────────────
+Accessibility Panel trigger       → src/components/accessibility/AccessibilityPanel.jsx
+Accessibility state + persistence → src/state/accessibilitySlice.js  (key: cdac_accessibility_prefs)
+AccessibilityContext provider     → src/state/AccessibilityContext.jsx
+  Applies: data-theme attr, .high-contrast class, --font-scale CSS var on every change.
+TTS hook                          → src/hooks/useTextToSpeech.js
+  speak(text) / stop() / isSpeaking / indianVoiceAvailable; preferred en-IN voice.
+TTS text generation               → src/hooks/useReadableSlideText.js → getReadableSlideText(slide)
+  Use this everywhere — never roll per-component TTS text derivation.
+Active slide tracking             → src/App.jsx → ActiveSlideContext + setActiveSlide()
+Auto-read on slide change         → src/routes/Module.jsx (resolvedSlide effect)
+Text size 3 steps                 → Normal=1, Large=1.2, ExtraLarge=1.45 via --font-scale.
+High contrast                     → .high-contrast class, tokens in src/styles/highContrast.css (WCAG AA).
+  Works in both light and dark theme independently.
+
+────────────────────────────────────────────────────────────────
+18. DARK THEME (Revision 10)
+────────────────────────────────────────────────────────────────
+Dark token overrides              → src/styles/tokens.css → [data-theme="dark"] block
+  Calm professional dark: slate-900 bg, sky-blue accent, no neon/glow/gradient.
+  Default: 'light' for every new session. Toggle: Accessibility Panel → Display → Theme.
+  All inline styles use token vars so dark mode works without manual component overrides.
+
+────────────────────────────────────────────────────────────────
+19. SCENE ANIMATION PLAYER — CISCO-STYLE LAYOUT (Revision 10)
+────────────────────────────────────────────────────────────────
+Scene layout                      → src/components/scenes/SceneAnimation.jsx
+  Animation frame centered, 16:9, max 560px. Content (title/body) below animation.
+Hover scrub bar                   → src/components/scenes/SceneScrubBar.jsx
+  Fade-in on hover/tap only. Never permanent. Shows elapsed/total time.
+  Draggable seek handle (seekTo). Play/Pause INSIDE hover bar ONLY.
+  prefers-reduced-motion: returns null — static frame only.
+useSceneLoop extended API         → src/hooks/useSceneLoop.js
+  New returns (additive): currentTimeMs, totalTimeMs, isPaused, pause(), resume(), seekTo(idx).
+  Existing callers unaffected. Default ambient autoplay loop unchanged.
+
+────────────────────────────────────────────────────────────────
+20. CONTINUOUS TIMELINE ANIMATION ENGINE & SLIDE CHROME (Revision 12)
+────────────────────────────────────────────────────────────────
+Continuous Animation Engine       → src/hooks/useSceneLoop.js
+  - Driven by requestAnimationFrame (rAF), not discrete setTimeout/setInterval.
+  - Returns: progress (0.0..1.0 continuous float), elapsedMs, totalMs, isPaused, play(), pause(), seek(progressValue), seekTo(val).
+  - Ambient autonomous loop with loopPauseMs between cycles.
+  - Sentence hover passes activeStepOverride to pause & seek to target progress smoothly.
+  - prefers-reduced-motion: locks to progress=1.0 with static final frame, rAF stopped.
+Interpolation Utility             → src/utils/interpolate.js
+  - interpolate(progress, inputRange, outputRange, { ease: 'linear'|'easeInOut'|'easeIn'|'easeOut', clamp: true })
+  - Supports numeric values and hex/RGB color interpolation (lerpHex).
+  - Helper functions: clamp, lerp.
+Scrub Bar (Live Clock & Seeking)  → src/components/scenes/SceneScrubBar.jsx
+  - Live elapsed/total time readout ticks every frame with rAF.
+  - Draggable handle calculates continuous ratio and calls seek(progress) for real-time visual scrubbing.
+  - Play/Pause icon freezes/resumes rAF loop directly.
+  - Leftover discrete step dots below frame removed; scrub bar handles all scrubbing on hover.
+Slide Chrome Pattern (Part C)     → src/components/slides/TheorySlide.jsx
+  - Above-card context chrome: Module label on left, "Card X of Y" on right.
+  - Full-width H1 slide title above card.
+  - Horizontal Segmented Progress Bar: 1 pill segment per slide in current topic (filled = passed/current, muted = upcoming). Scoped to topic sequence.
+  - Inside Card Top Bar:
+    - Small rounded tag chip (e.g. "IN SIMPLE WORDS", "OFFICIAL DEFINITION", "IDEA").
+    - Inline Accessibility controls: "Auto-Read: OFF/ON" toggle and "Listen to Card" trigger.
+  - Inside Card Body:
+    - Cisco-style centered 16:9 continuous SVG scene animation with hover scrub bar.
+    - Narrative text & interactive elements below scene.
+  - Card Footer:
+    - "< Back" on left, "Next >" / "Finish & Unlock Lab" on right.

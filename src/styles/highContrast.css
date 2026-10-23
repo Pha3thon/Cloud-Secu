@@ -1,0 +1,42 @@
+﻿/**
+ * High Contrast Mode
+ * CDAC Cloud Security Training Platform
+ * Applied via .high-contrast class on <html>.
+ * Overrides key token variables to WCAG AA minimums.
+ * Works independently of light or dark theme.
+ */
+
+.high-contrast {
+  --bg-app:           #000000;
+  --bg-card:          #0d0d0d;
+  --bg-card-subtle:   #111111;
+  --bg-card-hover:    #1a1a1a;
+  --bg-elevated:      #0d0d0d;
+
+  --border-light:     #4a4a4a;
+  --border-default:   #6b6b6b;
+  --border-medium:    #8a8a8a;
+  --border-dark:      #b0b0b0;
+  --border-subtle:    #4a4a4a;
+
+  --text-main:        #ffffff;
+  --text-secondary:   #eeeeee;
+  --text-muted:       #cccccc;
+  --text-inverse:     #000000;
+
+  --brand-primary:    #4fc3f7;   /* Lighter sky blue - AA on dark */
+  --primary-500:      #4fc3f7;
+
+  --success-bg:       #001a0a;
+  --success-border:   #00cc44;
+  --success-text:     #00ff55;
+  --success-main:     #00cc44;
+
+  --warning-bg:       #1a1000;
+  --warning-border:   #ffcc00;
+  --warning-text:     #ffdd44;
+
+  --danger-bg:        #1a0000;
+  --danger-border:    #ff4444;
+  --danger-text:      #ff6666;
+}

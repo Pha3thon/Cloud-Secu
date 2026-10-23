@@ -1,16 +1,48 @@
-# React + Vite
+# CDAC Cloud Security Training Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The CDAC Cloud Security Training Platform is an interactive, browser-based hands-on cloud security learning platform featuring 13 structured curriculum modules, interactive slide lectures with SVG scene animations, a simulated OpenStack Horizon cloud management console, a simulated Kali Linux workstation, a role-based access request portal, and real-time configuration validation for Module 4 (Cloud Infrastructure & Virtualization Security). Built as a pure static front-end application with no backend dependencies required.
 
-Currently, two official plugins are available:
+To find which file controls what, open `EDIT_GUIDE.txt`.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Requirements
 
-## React Compiler
+- Node.js 18.0.0 or higher (Node.js 20+ recommended)
+- npm 9.0.0 or higher
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting Started
 
-## Expanding the Oxlint configuration
+### 1. Install Dependencies
+```bash
+npm install
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+### 2. Run Development Server
+```bash
+npm run dev
+```
+Visit `http://localhost:5173` in your browser.
+
+### 3. Build for Production
+```bash
+npm run build
+```
+Generates a static production bundle in `dist/`.
+
+### 4. Preview Production Build
+```bash
+npm run preview
+```
+
+## Deployment
+
+Deploying the application requires no server-side runtime or database:
+- **Netlify / Vercel**: Connect repository or drag-and-drop the `dist/` folder directly; set build command to `npm run build` and publish directory to `dist`.
+- **GitHub Pages / Static Web Servers**: The application uses hash-based routing (`HashRouter` pattern), ensuring all deep links survive page refreshes on any static host or subdirectory without URL rewrite configuration.
+- **S3 / Nginx**: Copy the contents of `dist/` directly into your web root.
+
+## Demo Credentials
+
+| Role | Username | Password | Access / Capabilities |
+| :--- | :--- | :--- | :--- |
+| **Student** | `student` | `cloudsec123` | Curriculum access, progressive slide unlocking, Module 4 labs 1–7 |
+| **Admin / Instructor** | `admin` | `admin@cdac` | Unrestricted curriculum access, WYSIWYG Admin Slide & Lab Editor |
